@@ -1,0 +1,331 @@
+#ifndef GEODESIC_H
+#define GEODESIC_H
+
+#include "utility.h"
+#include "tensor.h"
+#include "matrix.h"
+
+#if MAGNETIC_FIELD_FULL
+#include "euler_heisenberg.h"
+#endif
+
+template <typename _Spacetime, typename _Field, typename _Coord>
+auto __direction(
+    const _Spacetime &spacetime,
+    const _Field &field,
+    const _Coord &position,
+    const _Coord &direction) {
+#if MAGNETIC_FIELD_FULL
+  return geodesic_acceleration__magnetic_field(
+      [&](auto position_u) { return spacetime.get_metric_ll(position_u); },
+      [&](auto position_u) { return spacetime.get_metric_uu(position_u); },
+      [&](auto position_u) { return field.get_F_ll(position_u); },
+      [&](auto F, auto G) { return EH::lagrangian_real(F, G); },
+      position,
+      direction
+  );
+#elif MAGNETIC_FIELD
+  return geodesic_acceleration__magnetic_field__lowest_order(
+      [&](auto position_u) { return spacetime.get_metric_ll(position_u); },
+      [&](auto position_u) { return spacetime.get_metric_uu(position_u); },
+      [&](auto position_u) { return field.get_potential_l(position_u); },
+      position,
+      direction
+  );
+#else
+  (void)field;
+  return spacetime.geodesic_acceleration(position, direction);
+#endif
+}
+
+template <typename _Spacetime, typename _Coord>
+auto __direction(
+    const _Spacetime &spacetime,
+    const Null &/* field */,
+    const _Coord &position,
+    const _Coord &direction) {
+  return spacetime.geodesic_acceleration(position, direction);
+}
+
+template <typename _Coord, typename ..._Extra>
+struct BasicGeodesicState : _Extra... {
+  typedef _Coord coord_type;
+  _Coord position;
+  _Coord direction;
+
+  BasicGeodesicState() {}
+  BasicGeodesicState(const _Coord &_position, const _Coord &_direction)
+      : position(_position), direction(_direction) {}
+
+  friend inline auto numerical_sqr_distance(
+      const BasicGeodesicState &A, const BasicGeodesicState &B) {
+    return numerical_sqr_distance(A.position, B.position)
+           + (numerical_sqr_distance(A.direction, B.direction)
+             + ... + numerical_sqr_distance(_Extra(A), _Extra(B)));
+  }
+
+  friend inline void mult(BasicGeodesicState *self, const auto &c) {
+    mult(&self->position, c);
+    mult(&self->direction, c);
+    (self->_Extra::_mult(c), ...);
+  }
+
+  friend inline void mult_add(
+      BasicGeodesicState *self, const auto &c, const BasicGeodesicState &A) {
+    mult_add(&self->position, c, A.position);
+    mult_add(&self->direction, c, A.direction);
+    (self->_Extra::_mult_add(c, A), ...);
+  }
+
+  friend inline void set_and_mult_add(
+      BasicGeodesicState *self,
+      const BasicGeodesicState &A, const auto &c, const BasicGeodesicState &B) {
+    set_and_mult_add(&self->position, A.position, c, B.position);
+    set_and_mult_add(&self->direction, A.direction, c, B.direction);
+    (self->_Extra::_set_and_mult_add(A, c, B), ...);
+  }
+
+  inline void _mult(const auto &c) {
+    mult(this, c);
+  }
+
+  inline void _mult_add(const auto &c, const BasicGeodesicState &A) {
+    mult_add(this, c, A);
+  }
+
+  inline void _set_and_mult_add(const BasicGeodesicState &A,
+                                const auto &c,
+                                const BasicGeodesicState &B) {
+    set_and_mult_add(this, A, c, B);
+  }
+
+  template <typename _Spacetime, typename _Field>
+  inline BasicGeodesicState integration_step(
+      const _Spacetime &spacetime,
+      const _Field &field) const {
+    BasicGeodesicState result;
+    result.position = direction;
+    result.direction = __direction(spacetime, field, position, direction);
+    mult(&result.position, -1);
+    (result._Extra::integration_step__impl(spacetime, *this), ...);
+    return result;
+  }
+};
+
+
+template <typename ..._Extra>
+struct GeodesicExtraBase : _Extra... {
+#if RENDER_DISK && RENDER_DISK != DISK_DUMMY
+  // TEMPORARY: Used for disks.
+  BoyerLindquistVector4<double> start_position;
+  BoyerLindquistVector4<double> start_direction;
+  // SphericalVector4<double> start_position;
+  // SphericalVector4<double> start_direction;
+#endif
+
+  void post_step(const auto &spacetime,
+                 const auto &basic,
+                 const real_t &used_dlambda) {
+    /* Call post_step__impl for each extra part. */
+    (void)spacetime;
+    (void)basic;
+    (void)used_dlambda;
+    (this->_Extra::post_step__impl(spacetime, basic, used_dlambda), ...);
+  }
+
+  void finish(int dead_reason, int steps) {
+    /* Call finish__impl for each extra part. */
+    (void)dead_reason;
+    (void)steps;
+    (this->_Extra::finish__impl(dead_reason, steps), ...);
+  }
+
+};
+
+struct GeodesicExtra__Base {
+  void post_step__impl(const auto &/* spacetime */,
+                       const auto &/* basic */,
+                       const real_t &/* used_dlambda */) {
+    /* noop by default */
+  }
+
+  void finish__impl(int /* dead_reason */, int /* steps */) {
+    /* noop by default */
+  }
+};
+
+struct GeodesicExtra__MinR : GeodesicExtra__Base {
+  real_t min_r = 1e+9;
+
+  void post_step__impl(const auto &/* spacetime */,
+                 const auto &basic,
+                 const real_t &/* used_dlambda */) {
+    min_r = std::min(min_r, basic.position.get_r());
+  }
+};
+
+struct GeodesicExtra__Steps : GeodesicExtra__Base {
+  int steps;
+
+  void finish__impl(int /* dead_reason */, int steps) {
+    this->steps = steps;
+  }
+};
+
+struct GeodesicExtra__DeadReason : GeodesicExtra__Base {
+  int dead_reason;
+
+  void finish__impl(int dead_reason, int /* steps */) {
+    this->dead_reason = dead_reason;
+  }
+};
+
+struct GeodesicExtra__Debug : GeodesicExtra__Base {
+  int n = 0;
+  void post_step__impl(const auto &spacetime,
+                 const auto &basic,
+                 const real_t &used_dlambda) {
+    // std::cerr << basic.position << '\n';
+    // std::cerr << basic.parallel_transport_lu;
+    if (debug <= 2) return;
+    CartesianVector4<double> pos, dir;
+    convert_point_and_diff(
+        spacetime.coord_system_parameters(basic.position),
+        basic.position,
+        basic.direction,
+        Null(),
+        pos,
+        dir);
+
+    std::cerr << "n=" << n++
+              << "\tused_dlambda=" << used_dlambda
+              << "\t" << basic.position
+              << "\t" << basic.direction
+              << "\t<" << pos << ">"
+              << "\t" << dir
+              << "\n";
+  }
+
+  void finish__impl(int dead_reason, int steps) {
+    if (debug <= 2) return;
+    std::cerr << "dead_reason=" << dead_reason
+              << "\tsteps=" << steps
+              << "\n";
+  }
+};
+
+struct GeodesicExtra__SavePath : GeodesicExtra__Base {
+  std::vector<std::pair<CartesianVector4<double>,
+                        CartesianVector4<double>>> path;
+  void post_step__impl(const auto &spacetime,
+                       const auto &basic,
+                       const real_t &/* used_dlambda */) {
+    CartesianVector4<double> pos, dir;
+    convert_point_and_diff(
+        spacetime.coord_system_parameters(basic.position),
+        basic.position,
+        basic.direction,
+        Null(), pos, dir);
+    path.emplace_back(pos, dir);
+  }
+};
+
+struct GeodesicExtra__SavedLambdas : GeodesicExtra__Base {
+  std::vector<double> dlambdas;
+  void post_step__impl(const auto &/* spacetime */,
+                       const auto &/* basic */,
+                       const real_t &used_dlambda) {
+    dlambdas.push_back(used_dlambda);
+  }
+};
+
+
+template <typename _Coord>
+struct Geodesic__ParallelTransport {
+  typedef typename _Coord::value_type _T;
+  Matrix4<_T> parallel_transport_lu;
+
+  Geodesic__ParallelTransport() {
+    for (int i = 0; i < 4; ++i)
+      for (int j = 0; j < 4; ++j)
+        parallel_transport_lu[i][j] = i == j ? 1 : 0;
+  }
+
+  void __integration_step__impl(const Christoffel<_T> &christoffel_ull,
+                                const auto &basic) {
+    for (int l = 0; l < 4; ++l) {
+      for (int k = 0; k < 4; ++k) {
+        _T tmp = _T();
+        for (int i = 0; i < 4; ++i)
+          for (int j = 0; j < 4; ++j) {
+            tmp += basic.direction[i]
+                 * christoffel_ull[k][i][j]
+                 * basic.parallel_transport_lu[l][j];
+          }
+        parallel_transport_lu[l][k] = tmp;
+      }
+    }
+  }
+
+  void integration_step__impl(const auto &spacetime, const auto &basic) {
+    Christoffel<_T> christoffel_lll =
+        spacetime.get_christoffel_lll(basic.position);
+    for (int l = 0; l < 4; ++l) {
+      _Coord result;  // result_l
+      for (int k = 0; k < 4; ++k) {
+        _T tmp = _T();
+        for (int i = 0; i < 4; ++i)
+          for (int j = 0; j < 4; ++j) {
+            tmp += basic.direction[i]
+                 * christoffel_lll[k][i][j]
+                 * basic.parallel_transport_lu[l][j];
+          }
+        result[k] = tmp;
+      }
+
+      // result_l -> result_u
+      result = spacetime.raise_index(basic.position, result);
+      // We do backwards raytracing, thus we have a + sign here.
+      for (int k = 0; k < 4; ++k)
+        parallel_transport_lu[l][k] = result[k];
+    }
+  }
+
+  friend inline auto numerical_sqr_distance(
+      const Geodesic__ParallelTransport &/* A */,
+      const Geodesic__ParallelTransport &/* B */) {
+    return 0.0;  // Exclude from the epsilon calculation.
+    // return numerical_sqr_distance(A.parallel_transport_lu,
+    //                               B.parallel_transport_lu);
+  }
+
+  inline void _mult(const auto &c) {
+    mult(&parallel_transport_lu, c);
+  }
+
+  inline void _mult_add(const auto &c, const Geodesic__ParallelTransport &A) {
+    mult_add(&parallel_transport_lu, c, A.parallel_transport_lu);
+  }
+
+  inline void _set_and_mult_add(const Geodesic__ParallelTransport &A,
+                                const auto &c,
+                                const Geodesic__ParallelTransport &B) {
+    set_and_mult_add(&parallel_transport_lu, A.parallel_transport_lu, c,
+                     B.parallel_transport_lu);
+  }
+};
+
+
+template <typename _Basic, typename _Extra>
+struct FullGeodesicData {
+  typedef _Basic basic_type;
+  typedef _Extra extra_type;
+
+  _Basic basic;
+  _Extra extra;
+};
+
+template <typename _Coord> using BasicFullGeodesicData =
+    FullGeodesicData<BasicGeodesicState<_Coord>, GeodesicExtraBase<>>;
+
+#endif

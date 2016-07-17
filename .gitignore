@@ -1,0 +1,5 @@
+*.tga
+.*.swp
+.DS_Store
+.d
+build
