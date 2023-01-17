@@ -6,7 +6,7 @@ BIN=otr
 DEPDIR=.d
 DEPFLAGS=-MT $@ -MMD -MP -MF
 LIBS=-pthread
-SOURCES= $(shell find src tests -type f -name "*.cpp")
+SOURCES= $(shell find src/bhr tests -type f -name "*.cpp")
 OBJ= $(patsubst %,build/%,$(SOURCES:.cpp=.o))
 
 RM= rm -f
@@ -29,12 +29,12 @@ $(BIN): $(OBJ)
 
 build/src/%.o: src/%.cpp $(DEPDIR)/src/%.d
 	@mkdir -pv $(dir $(DEPDIR)/src/$*) $(dir build/src/$*)
-	$(CPP) -I include $(DEPFLAGS) $(DEPDIR)/src/$*.Td -c $< -o $@ $(CPPFLAGS)
+	$(CPP) -I src $(DEPFLAGS) $(DEPDIR)/src/$*.Td -c $< -o $@ $(CPPFLAGS)
 	@mv -f $(DEPDIR)/src/$*.Td $(DEPDIR)/src/$*.d
 
 build/tests/%.o: tests/%.cpp $(DEPDIR)/tests/%.d
 	@mkdir -pv $(dir $(DEPDIR)/tests/$*) $(dir build/tests/$*)
-	$(CPP) -I include $(DEPFLAGS) $(DEPDIR)/tests/$*.Td -c $< -o $@ $(CPPFLAGS)
+	$(CPP) -I src $(DEPFLAGS) $(DEPDIR)/tests/$*.Td -c $< -o $@ $(CPPFLAGS)
 	@mv -f $(DEPDIR)/tests/$*.Td $(DEPDIR)/tests/$*.d
 
 $(DEPDIR)/src/%.d: ;
