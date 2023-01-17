@@ -3,17 +3,25 @@
 
 #include <cassert>
 
-constexpr inline auto sqr(auto x) { return x * x; }
-constexpr inline auto cube(auto x) { return sqr(x) * x; }
+template <typename T>
+constexpr inline auto sqr(T x) { return x * x; }
+
+template <typename T>
+constexpr inline auto cube(T x) { return sqr(x) * x; }
+
 template<typename _T> constexpr inline _T inverse(const _T &x) {
   /* How do you properly make the multiplicative inverse? */
   return _T(1) / x;
 }
-constexpr inline auto inv_sqrt(const auto &x) {
+
+template <typename T>
+constexpr inline auto inv_sqrt(const T &x) {
   using std::sqrt;
   return inverse(sqrt(x));
 }
-constexpr inline auto coth(auto x) {
+
+template <typename T>
+constexpr inline auto coth(T x) {
   using std::tanh;
   return inverse(tanh(x));
 }

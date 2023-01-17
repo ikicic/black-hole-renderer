@@ -241,22 +241,25 @@ class KERTAPDiskTexture {
     _Coord direction;
     _Coord vec;
 
-    friend inline void mult(_ForwardsState *self, const auto &c) {
+    template <typename U>
+    friend inline void mult(_ForwardsState *self, const U &c) {
       mult(&self->position, c);
       mult(&self->direction, c);
       mult(&self->vec, c);
     }
 
+    template <typename U>
     friend inline void mult_add(
-        _ForwardsState *self, const auto &c, const _ForwardsState &A) {
+        _ForwardsState *self, const U &c, const _ForwardsState &A) {
       mult_add(&self->position, c, A.position);
       mult_add(&self->direction, c, A.direction);
       mult_add(&self->vec, c, A.vec);
     }
 
+    template <typename U>
     friend inline void set_and_mult_add(
         _ForwardsState *self,
-        const _ForwardsState &A, const auto &c, const _ForwardsState &B) {
+        const _ForwardsState &A, const U &c, const _ForwardsState &B) {
       set_and_mult_add(&self->position, A.position, c, B.position);
       set_and_mult_add(&self->direction, A.direction, c, B.direction);
       set_and_mult_add(&self->vec, A.vec, c, B.vec);

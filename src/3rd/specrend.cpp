@@ -36,8 +36,8 @@
 
 */
 
-#include "base.h"
-#include "3rd/specrend.h"
+#include <bhr/base.h>
+#include <bhr/3rd/specrend.h>
 
 #include <cstdio>
 #include <cmath>

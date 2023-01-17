@@ -81,18 +81,21 @@ struct Matrix {
     return result;
   }
 
-  friend inline void mult(Matrix *self, const auto &c) {
+  template <typename U>
+  friend inline void mult(Matrix *self, const U &c) {
     FOR(i, j)
       mult(&self->v[i][j], c);
   }
 
-  friend inline void mult_add(Matrix *self, const auto &c, const Matrix &A) {
+  template <typename U>
+  friend inline void mult_add(Matrix *self, const U &c, const Matrix &A) {
     FOR(i, j)
       mult_add(&self->v[i][j], c, A.v[i][j]);
   }
 
+  template <typename U>
   friend inline void set_and_mult_add(
-      Matrix *self, const Matrix &A, const auto &c, const Matrix &B) {
+      Matrix *self, const Matrix &A, const U &c, const Matrix &B) {
     FOR(i, j)
       set_and_mult_add(&self->v[i][j], A.v[i][j], c, B.v[i][j]);
   }

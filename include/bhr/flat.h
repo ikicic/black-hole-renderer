@@ -107,7 +107,8 @@ class FlatSpacetime : public SpacetimeBase<FlatSpacetime> {
     return result;
   }
 
-  inline auto get_christoffel_ull(const auto &position) const {
+  template <typename Position>
+  inline auto get_christoffel_ull(const Position &position) const {
     // The specialization for CartesianVector4 "erases" the general function.
     return (static_cast<const _Parent *>(this))->get_christoffel_ull(position);
   }
@@ -170,4 +171,3 @@ class FlatSpacetime : public SpacetimeBase<FlatSpacetime> {
 };
 
 #endif
-

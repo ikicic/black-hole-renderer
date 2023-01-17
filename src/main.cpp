@@ -28,7 +28,8 @@ int debug = 1;
 #define GIVE_UP(...) { fprintf(stderr, __VA_ARGS__); return false; }
 
 template <typename _FullGeodesicData,
-          typename _Spacetime>
+          typename _Spacetime,
+          typename DiskTex>
 bool _generate_and_save_image(
     const _Spacetime &spacetime,
     const char *filename_float,
@@ -38,7 +39,7 @@ bool _generate_and_save_image(
 #if SKY_ENABLED
     const Image &sky,
 #endif
-    const auto &disk_tex,
+    const DiskTex &disk_tex,
     int thread_count) {
 #if RENDER_DISK && DISK_RELIEF_TEXTURE
   if (!load_disk_relief_texture())
@@ -321,21 +322,25 @@ struct _BasicGeodesicState
     return numerical_sqr_distance(_Base(A), _Base(B));
   }
 
-  friend inline void mult(_BasicGeodesicState *self, const auto &c) {
+  template <typename U>
+  friend inline void mult(_BasicGeodesicState *self, const U &c) {
     self->_Base::_mult(c);
   }
+  template <typename U>
   friend inline void mult_add(
-      _BasicGeodesicState *self, const auto &c, const _BasicGeodesicState &A) {
+      _BasicGeodesicState *self, const U &c, const _BasicGeodesicState &A) {
     self->_Base::_mult_add(c, A);
   }
+  template <typename U>
   friend inline void set_and_mult_add(
-      _BasicGeodesicState *self, const _BasicGeodesicState &A, const auto &c,
+      _BasicGeodesicState *self, const _BasicGeodesicState &A, const U &c,
       const _BasicGeodesicState &B) {
     self->_Base::_set_and_mult_add(A, c, B);
   }
 
-  _BasicGeodesicState integration_step(const auto &spacetime,
-                                       const auto &/* field */) const {
+  template <typename Spacetime, typename Field>
+  _BasicGeodesicState integration_step(const Spacetime &spacetime,
+                                       const Field &/* field */) const {
     _BasicGeodesicState result;
     typedef typename _BasicGeodesicState::coord_type::value_type _T;
     auto christoffel_ull = spacetime.get_christoffel_ull(this->position);

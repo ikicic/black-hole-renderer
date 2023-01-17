@@ -1,7 +1,9 @@
 #ifndef CHANDRA_1960
 #define CHANDRA_1960
 
-static std::pair<double, double> chandra1960(double mu) {
+#include <utility>
+
+inline std::pair<double, double> chandra1960(double mu) {
   // Copied from KERTAP::chandra60.m.
 
   // delta is the degree of polarization

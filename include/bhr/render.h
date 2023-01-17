@@ -109,12 +109,16 @@ std::pair<_Coord, _Coord> cartesian3d_to_coord4d(
 }
 
 
-template <typename _Spacetime, typename _Field, typename _FullGeodesicData>
+template <
+    typename _Spacetime,
+    typename _Field,
+    typename _FullGeodesicData,
+    typename DLambdaFunc>
 int integrate_single_geodesic(
     const _Spacetime &spacetime,
     const _Field &field,
     const Camera *raytracer_camera,
-    auto dlambda_func,
+    DLambdaFunc dlambda_func,
     real_t x,
     real_t y,
     _FullGeodesicData *output) {
@@ -268,13 +272,13 @@ void generate_image(
   }
 }
 
-template <typename _FullGeodesicData, typename _Spacetime>
+template <typename _FullGeodesicData, typename _Spacetime, typename DiskTex>
 RGBd get_single_geodesic_color(
     const _Spacetime &spacetime,
 #if SKY_ENABLED
     const Image &sky,
 #endif
-    const auto &disk_tex,
+    const DiskTex &disk_tex,
     const _FullGeodesicData &full) {
   (void)disk_tex;
   (void)spacetime;
@@ -315,14 +319,14 @@ RGBd get_single_geodesic_color(
 }
 
 
-template <typename _Spacetime, typename _FullGeodesicData>
+template <typename _Spacetime, typename _FullGeodesicData, typename DiskTex>
 void colorize_from_matrix_snapshot(
     const SnapshotMatrix<_FullGeodesicData> &snapshot,
     const _Spacetime &spacetime,
 #if SKY_ENABLED
     const Image &sky,
 #endif
-    const auto &disk_tex,
+    const DiskTex &disk_tex,
     RGBd *output) {
   auto geodesics = snapshot.geodesics;
 

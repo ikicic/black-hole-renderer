@@ -78,14 +78,17 @@ using task_stack_t = std::stack<std::pair<
     typename std::vector<ScreenGeodesic<_FullGeodesicData>>::iterator,
     typename std::vector<ScreenGeodesic<_FullGeodesicData>>::iterator>>;
 
-template <typename _FullGeodesicData, typename _Spacetime, typename _Field>
+template <typename _FullGeodesicData,
+          typename _Spacetime,
+          typename _Field,
+          typename DLambdaFunc>
 void _integrate_geodesics_worker_thread(
     task_stack_t<_FullGeodesicData> &tasks,
     std::mutex &tasks_mutex,
     const _Spacetime &spacetime,
     const _Field &field,
     const Camera *raytracer_camera,
-    const auto &dlambda_func,
+    const DLambdaFunc &dlambda_func,
     int width,
     int height) {
 
@@ -447,14 +450,14 @@ inline void generate_image_recursive(
 }
 
 
-template <typename _Spacetime, typename _FullGeodesicData>
+template <typename _Spacetime, typename _FullGeodesicData, typename DiskTex>
 void colorize_from_recursive_snapshot(
     const SnapshotRecursive<_FullGeodesicData> &snapshot,
     const _Spacetime &spacetime,
 #if SKY_ENABLED
     const Image &/* sky */,
 #endif
-    const auto &disk_tex,
+    const DiskTex &disk_tex,
     RGBd *output) {
 
   const int width = snapshot.width;

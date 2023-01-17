@@ -167,9 +167,9 @@ inline double magnetic_only_lagrangian(double F, double /*G*/) {
   return _magnetic_only_lagrangian(F);
 }
 
-template <typename _T>
+template <typename _T, typename Func>
 std::pair<_T, _T> qed_metric_correction_lambda__dimless(
-    auto dimless_lagrangian_func, const _T &F, const _T &G) {
+    Func dimless_lagrangian_func, const _T &F, const _T &G) {
   // REFERENCE: http://arxiv.org/abs/1501.06234v2
   // NOTE: The article uses F = -F_ab F^ab / 4, while we use F = +F_ab F^ab/4.
   //                        G = -F_ab *F^ab / 4              G = +F_ab *F^ab/4.
@@ -204,9 +204,9 @@ std::pair<_T, _T> qed_metric_correction_lambda__dimless(
   return std::make_pair(lambda1, lambda2);
 }
 
-template <typename _T>
+template <typename _T, typename Func>
 std::pair<_T, _T> qed_metric_correction_lambda(
-    auto lagrangian_func, const _T &F, const _T &G) {
+    Func lagrangian_func, const _T &F, const _T &G) {
   std::pair<_T, _T> result = qed_metric_correction_lambda__dimless(
       [&lagrangian_func](auto dimlessF, auto dimlessG) {
         return PHY_inv_sqr_Bc * lagrangian_func(

@@ -53,19 +53,24 @@ inline void __print_matrix444(const double tmp[4][4][4]) {
   fprintf(stderr, "\n");
 }
 
-template <typename _T, template <typename> class _Vector>
+template <typename _T, template <typename> class _Vector, typename Func>
 inline _Vector<_T> get_electric_field(
-    const auto &potential_l_func,
+    const Func &potential_l_func,
     const _Vector<_T> &position_u,
     const _Vector<_T> &velocity_u) {
 
 }
 
-template <typename _T, template <typename> class _Vector>
+template <
+    typename _T,
+    template <typename> class _Vector,
+    typename MetricLLFunc,
+    typename MetricUUFunc,
+    typename PotentialLFunc>
 inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
-    const auto &metric_ll_func,
-    const auto &metric_uu_func,
-    const auto &potential_l_func,
+    const MetricLLFunc &metric_ll_func,
+    const MetricUUFunc &metric_uu_func,
+    const PotentialLFunc &potential_l_func,
     const _Vector<_T> &position_u,
     const _Vector<_T> &vec_u) {
 
@@ -207,12 +212,18 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
 }
 
 
-template <typename _T, template <typename> class _Vector>
+template <
+    typename _T,
+    template <typename> class _Vector,
+    typename MetricLLFunc,
+    typename MetricUUFunc,
+    typename FLLFunc,
+    typename LagrangianFunc>
 inline _Vector<_T> geodesic_acceleration__magnetic_field(
-    const auto &metric_ll_func,
-    const auto &metric_uu_func,
-    const auto &F_ll_func,
-    const auto &lagrangian_func,
+    const MetricLLFunc &metric_ll_func,
+    const MetricUUFunc &metric_uu_func,
+    const FLLFunc &F_ll_func,
+    const LagrangianFunc &lagrangian_func,
     const _Vector<_T> &position_u,
     const _Vector<_T> &vec_u) {
   using std::sqrt;

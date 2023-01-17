@@ -165,11 +165,11 @@ std::pair<real_t, real_t> advance_geodesic__RGF45(
 
 
 template <typename _FullGeodesicData, typename _Coord,
-          typename _Spacetime, typename _Field>
+          typename _Spacetime, typename _Field, typename Func>
 auto generate_geodesic(
     const _Spacetime &spacetime,
     const _Field &field,
-    auto break_condition_func,
+    Func break_condition_func,
     _Coord position,
     _Coord direction,
     int N,

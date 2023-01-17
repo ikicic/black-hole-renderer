@@ -1,7 +1,7 @@
 # CPP= clang++-3.5
-CPP=g++
-WARNINGFLAGS=-Wfatal-errors -Wall -Wextra -Wno-unused-result -Werror -Wno-unused-function -Wno-comment
-CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 -O3 -march=native -std=c++1z -fdiagnostics-color $(WARNINGFLAGS) #-ffast-math -fno-finite-math-only
+CPP ?= g++
+WARNINGFLAGS=-Wall -Wextra
+CPPFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 -O3 -march=native -std=c++1z -fdiagnostics-color -g $(WARNINGFLAGS) #-ffast-math -fno-finite-math-only
 BIN=otr
 DEPDIR=.d
 DEPFLAGS=-MT $@ -MMD -MP -MF

@@ -64,37 +64,43 @@ struct BasicGeodesicState : _Extra... {
              + ... + numerical_sqr_distance(_Extra(A), _Extra(B)));
   }
 
-  friend inline void mult(BasicGeodesicState *self, const auto &c) {
+  template <typename U>
+  friend inline void mult(BasicGeodesicState *self, const U &c) {
     mult(&self->position, c);
     mult(&self->direction, c);
     (self->_Extra::_mult(c), ...);
   }
 
+  template <typename U>
   friend inline void mult_add(
-      BasicGeodesicState *self, const auto &c, const BasicGeodesicState &A) {
+      BasicGeodesicState *self, const U &c, const BasicGeodesicState &A) {
     mult_add(&self->position, c, A.position);
     mult_add(&self->direction, c, A.direction);
     (self->_Extra::_mult_add(c, A), ...);
   }
 
+  template <typename U>
   friend inline void set_and_mult_add(
       BasicGeodesicState *self,
-      const BasicGeodesicState &A, const auto &c, const BasicGeodesicState &B) {
+      const BasicGeodesicState &A, const U &c, const BasicGeodesicState &B) {
     set_and_mult_add(&self->position, A.position, c, B.position);
     set_and_mult_add(&self->direction, A.direction, c, B.direction);
     (self->_Extra::_set_and_mult_add(A, c, B), ...);
   }
 
-  inline void _mult(const auto &c) {
+  template <typename U>
+  inline void _mult(const U &c) {
     mult(this, c);
   }
 
-  inline void _mult_add(const auto &c, const BasicGeodesicState &A) {
+  template <typename U>
+  inline void _mult_add(const U &c, const BasicGeodesicState &A) {
     mult_add(this, c, A);
   }
 
+  template <typename U>
   inline void _set_and_mult_add(const BasicGeodesicState &A,
-                                const auto &c,
+                                const U &c,
                                 const BasicGeodesicState &B) {
     set_and_mult_add(this, A, c, B);
   }
@@ -123,8 +129,9 @@ struct GeodesicExtraBase : _Extra... {
   // SphericalVector4<double> start_direction;
 #endif
 
-  void post_step(const auto &spacetime,
-                 const auto &basic,
+  template <typename Spacetime, typename Basic>
+  void post_step(const Spacetime &spacetime,
+                 const Basic &basic,
                  const real_t &used_dlambda) {
     /* Call post_step__impl for each extra part. */
     (void)spacetime;
@@ -143,8 +150,9 @@ struct GeodesicExtraBase : _Extra... {
 };
 
 struct GeodesicExtra__Base {
-  void post_step__impl(const auto &/* spacetime */,
-                       const auto &/* basic */,
+  template <typename Spacetime, typename Basic>
+  void post_step__impl(const Spacetime &/* spacetime */,
+                       const Basic &/* basic */,
                        const real_t &/* used_dlambda */) {
     /* noop by default */
   }
@@ -157,9 +165,10 @@ struct GeodesicExtra__Base {
 struct GeodesicExtra__MinR : GeodesicExtra__Base {
   real_t min_r = 1e+9;
 
-  void post_step__impl(const auto &/* spacetime */,
-                 const auto &basic,
-                 const real_t &/* used_dlambda */) {
+  template <typename Spacetime, typename Basic>
+  void post_step__impl(const Spacetime &/* spacetime */,
+                       const Basic &basic,
+                       const real_t &/* used_dlambda */) {
     min_r = std::min(min_r, basic.position.get_r());
   }
 };
@@ -182,9 +191,10 @@ struct GeodesicExtra__DeadReason : GeodesicExtra__Base {
 
 struct GeodesicExtra__Debug : GeodesicExtra__Base {
   int n = 0;
-  void post_step__impl(const auto &spacetime,
-                 const auto &basic,
-                 const real_t &used_dlambda) {
+  template <typename Spacetime, typename Basic>
+  void post_step__impl(const Spacetime &spacetime,
+                       const Basic &basic,
+                       const real_t &used_dlambda) {
     // std::cerr << basic.position << '\n';
     // std::cerr << basic.parallel_transport_lu;
     if (debug <= 2) return;
@@ -217,8 +227,9 @@ struct GeodesicExtra__Debug : GeodesicExtra__Base {
 struct GeodesicExtra__SavePath : GeodesicExtra__Base {
   std::vector<std::pair<CartesianVector4<double>,
                         CartesianVector4<double>>> path;
-  void post_step__impl(const auto &spacetime,
-                       const auto &basic,
+  template <typename Spacetime, typename Basic>
+  void post_step__impl(const Spacetime &spacetime,
+                       const Basic &basic,
                        const real_t &/* used_dlambda */) {
     CartesianVector4<double> pos, dir;
     convert_point_and_diff(
@@ -232,8 +243,9 @@ struct GeodesicExtra__SavePath : GeodesicExtra__Base {
 
 struct GeodesicExtra__SavedLambdas : GeodesicExtra__Base {
   std::vector<double> dlambdas;
-  void post_step__impl(const auto &/* spacetime */,
-                       const auto &/* basic */,
+  template <typename Spacetime, typename Basic>
+  void post_step__impl(const Spacetime &/* spacetime */,
+                       const Basic &/* basic */,
                        const real_t &used_dlambda) {
     dlambdas.push_back(used_dlambda);
   }
@@ -251,8 +263,9 @@ struct Geodesic__ParallelTransport {
         parallel_transport_lu[i][j] = i == j ? 1 : 0;
   }
 
+  template <typename Basic>
   void __integration_step__impl(const Christoffel<_T> &christoffel_ull,
-                                const auto &basic) {
+                                const Basic &basic) {
     for (int l = 0; l < 4; ++l) {
       for (int k = 0; k < 4; ++k) {
         _T tmp = _T();
@@ -267,7 +280,8 @@ struct Geodesic__ParallelTransport {
     }
   }
 
-  void integration_step__impl(const auto &spacetime, const auto &basic) {
+  template <typename Spacetime, typename Basic>
+  void integration_step__impl(const Spacetime &spacetime, const Basic &basic) {
     Christoffel<_T> christoffel_lll =
         spacetime.get_christoffel_lll(basic.position);
     for (int l = 0; l < 4; ++l) {
@@ -299,16 +313,19 @@ struct Geodesic__ParallelTransport {
     //                               B.parallel_transport_lu);
   }
 
-  inline void _mult(const auto &c) {
+  template <typename U>
+  inline void _mult(const U &c) {
     mult(&parallel_transport_lu, c);
   }
 
-  inline void _mult_add(const auto &c, const Geodesic__ParallelTransport &A) {
+  template <typename U>
+  inline void _mult_add(const U &c, const Geodesic__ParallelTransport &A) {
     mult_add(&parallel_transport_lu, c, A.parallel_transport_lu);
   }
 
+  template <typename U>
   inline void _set_and_mult_add(const Geodesic__ParallelTransport &A,
-                                const auto &c,
+                                const U &c,
                                 const Geodesic__ParallelTransport &B) {
     set_and_mult_add(&parallel_transport_lu, A.parallel_transport_lu, c,
                      B.parallel_transport_lu);

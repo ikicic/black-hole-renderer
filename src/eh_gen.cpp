@@ -14,7 +14,8 @@
 namespace QEDCache {
 
 /* Everything is in the units of B_c. */
-constexpr int CNT_F = 1000000;
+// constexpr int CNT_F = 1000000;
+constexpr int CNT_F = 1000;
 constexpr int CNT_G = 1;
 constexpr double MIN_F = sqr(1e-11);
 constexpr double MIN_G = sqr(1e-11);
@@ -121,7 +122,7 @@ LambdaCacheType get_cached_lambdas(double F, double G) {
   return result;
 }
 
-void _lambda_preprocess_status_thread(std::vector<int> &status, int total) {
+static void _lambda_preprocess_status_thread(std::vector<int> &status, int total) {
   auto start_time = std::chrono::system_clock::now();
   int done;
   do {
@@ -131,7 +132,7 @@ void _lambda_preprocess_status_thread(std::vector<int> &status, int total) {
     std::chrono::duration<double> time_delta =
         std::chrono::system_clock::now() - start_time;
     int ETA = (int)((total - done) * time_delta.count() / done);
-    fprintf(stderr, "%.2lf%% (%.0lfOPS, ETA: %ds)      \r",
+    fprintf(stderr, "%.2lf%% (%.0lfop/s, ETA: %ds)      \r",
         100. * done / total,
         done / time_delta.count(),
         ETA
@@ -144,7 +145,7 @@ void _lambda_preprocess_status_thread(std::vector<int> &status, int total) {
   fprintf(stderr, "\nTotal time: %.1lfs\n", time_delta.count());
 }
 
-LambdaCacheType _calc_lambdas__dimless(double F) {
+static LambdaCacheType _calc_lambdas__dimless(double F) {
   lambda_t Fad(F, 1, 0);
   lambda_t Gad(MIN_G, 0, 1);
 
@@ -156,7 +157,7 @@ LambdaCacheType _calc_lambdas__dimless(double F) {
   return {result.first, result.second};
 }
 
-void _lambda_preprocess_worker_thread(int thread_cnt, int index, int *status) {
+static void _lambda_preprocess_worker_thread(int thread_cnt, int index, int *status) {
   *status = 0;
   for (int k = index; k < SIZE; k += thread_cnt) {
 #if 0
@@ -174,7 +175,7 @@ void _lambda_preprocess_worker_thread(int thread_cnt, int index, int *status) {
   }
 }
 
-bool _lambda_preprocess(int thread_count) {
+static bool _lambda_preprocess(int thread_count) {
   if (lambda_cache != nullptr)
     return true;
   std::stringstream s;
@@ -220,6 +221,10 @@ bool _lambda_preprocess(int thread_count) {
 
   fprintf(stderr, "  Saving...");
   f = fopen(filename.c_str(), "wb");
+  if (f == nullptr) {
+    fprintf(stderr, "Error opening %s for writing.\n", filename.c_str());
+    exit(1);
+  }
   if (fwrite(lambda_cache, sizeof(LambdaCacheType), SIZE, f) != SIZE) {
     fprintf(stderr, "Error writing lambda cache! Aborting!\n");
     delete []lambda_cache;

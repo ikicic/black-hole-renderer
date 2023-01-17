@@ -77,22 +77,22 @@ void Settings::set_default(void) {
 static void _read_value(int &value, const char *input) {
   sscanf(input, "%d", &value);
 }
-static void _read_value(float &value, const char *input) {
+[[maybe_unused]] static void _read_value(float &value, const char *input) {
   sscanf(input, "%f", &value);
 }
-static void _read_value(double &value, const char *input) {
+[[maybe_unused]] static void _read_value(double &value, const char *input) {
   sscanf(input, "%lf", &value);
 }
-static void _read_value(long double &value, const char *input) {
+[[maybe_unused]] static void _read_value(long double &value, const char *input) {
   sscanf(input, "%Lf", &value);
 }
-static void _read_value(Vector<float, 3> &value, const char *input) {
+[[maybe_unused]] static void _read_value(Vector<float, 3> &value, const char *input) {
   sscanf(input, "%f,%f,%f", &value[0], &value[1], &value[2]);
 }
-static void _read_value(Vector<double, 3> &value, const char *input) {
+[[maybe_unused]] static void _read_value(Vector<double, 3> &value, const char *input) {
   sscanf(input, "%lf,%lf,%lf", &value[0], &value[1], &value[2]);
 }
-static void _read_value(Vector<long double, 3> &value, const char *input) {
+[[maybe_unused]] static void _read_value(Vector<long double, 3> &value, const char *input) {
   sscanf(input, "%Lf,%Lf,%Lf", &value[0], &value[1], &value[2]);
 }
 static void _read_value(std::string &value, const char *input) {

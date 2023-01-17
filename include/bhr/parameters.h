@@ -1,6 +1,7 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
+#include <bhr/base.h>
 #include <bhr/physical_constants.h>
 
 constexpr QUANTITY(0, 1, 0, 0) _BLACK_HOLE_r_S = 2 * PHY_G * BLACK_HOLE_M / sqr(PHY_c);
