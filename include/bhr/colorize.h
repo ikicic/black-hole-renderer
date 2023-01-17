@@ -1,12 +1,12 @@
 #ifndef COLORIZE_H
 #define COLORIZE_H
 
-#include "mod.h"
+#include <bhr/mod.h>
 
 #define BLOOM  0
 
-#include "render.h"
-#include "recursive_render.h"
+#include <bhr/render.h>
+#include <bhr/recursive_render.h>
 
 
 template <typename _FullGeodesicData, typename... Args>

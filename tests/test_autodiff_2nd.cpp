@@ -1,6 +1,6 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/autodiff_2nd.h"
+#include <bhr/autodiff_2nd.h>
 
 #include <cmath>
 #include <cassert>

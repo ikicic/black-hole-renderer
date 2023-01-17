@@ -1,7 +1,7 @@
-#include "base.h"
-#include "spectrum.h"
-#include "utility.h"
-#include "3rd/specrend.h"
+#include <bhr/base.h>
+#include <bhr/spectrum.h>
+#include <bhr/utility.h>
+#include <bhr/3rd/specrend.h>
 
 #include <cassert>
 #include <cmath>

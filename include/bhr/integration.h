@@ -1,7 +1,7 @@
 #ifndef INTEGRATION_H
 #define INTEGRATION_H
 
-#include "utility.h"
+#include <bhr/utility.h>
 
 
 // https://math.okstate.edu/people/yqwang/teaching/math4513_fall11/Notes/rungekutta.pdf

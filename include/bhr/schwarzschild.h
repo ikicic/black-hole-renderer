@@ -2,7 +2,7 @@
 #define SCHWARZSCHILD_H
 
 #include <cmath>
-#include "spacetime.h"
+#include <bhr/spacetime.h>
 
 class SchwarzschildSpacetime : public BlackHoleBase<SchwarzschildSpacetime> {
  public:

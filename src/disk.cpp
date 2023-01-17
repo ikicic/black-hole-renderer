@@ -1,7 +1,7 @@
-#include "base.h"
+#include <bhr/base.h>
 
 #if RENDER_DISK
-#include "disk.h"
+#include <bhr/disk.h>
 
 ShakuraSunyaevDisk *_shakura_sunyaev = nullptr;
 double shakura_sunyaev_height(double r) {

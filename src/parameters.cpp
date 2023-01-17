@@ -1,6 +1,6 @@
-#include "base.h"
-#include "parameters.h"
-#include "qed_lagrangian.h"
+#include <bhr/base.h>
+#include <bhr/parameters.h>
+#include <bhr/qed_lagrangian.h>
 
 void debug_units(void) {
 #define PRINT(x) fprintf(stderr, "%20s = %12lg\n", #x, double(x));

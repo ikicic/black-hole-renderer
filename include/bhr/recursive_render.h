@@ -3,9 +3,9 @@
 
 #include <map>
 
-#include "geodesic.h"
-#include "utility.h"
-#include "rectangle.h"
+#include <bhr/geodesic.h>
+#include <bhr/utility.h>
+#include <bhr/rectangle.h>
 
 #define LOCATION_FACTOR   (1 << 16)
 

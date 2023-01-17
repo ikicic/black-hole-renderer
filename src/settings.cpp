@@ -1,8 +1,8 @@
-#include "base.h"
-#include "settings.h"
-#include "parameters.h"
+#include <bhr/base.h>
+#include <bhr/settings.h>
+#include <bhr/parameters.h>
 
-#include "3rd/sha1.h"
+#include <bhr/3rd/sha1.h>
 
 #include <sstream>
 #include <thread>

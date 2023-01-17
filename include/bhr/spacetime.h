@@ -1,7 +1,7 @@
 #ifndef SPACETIME_H
 #define SPACETIME_H
 
-#include "tensor.h"
+#include <bhr/tensor.h>
 
 #define DERIVED (static_cast<const _Derived *>(this))
 

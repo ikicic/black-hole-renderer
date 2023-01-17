@@ -1,26 +1,26 @@
+#include <bhr/base.h>
+#include <bhr/utility.h>
+#include <bhr/colorize.h>
+#include <bhr/coordinate.h>
+
+#include <bhr/field.h>
+#include <bhr/flat.h>
+#include <bhr/kerr.h>
+// #include <bhr/reissner_nordstrom.h>
+#include <bhr/schwarzschild.h>
+#include <bhr/settings.h>
+#include <bhr/tga.h>
+#include <bhr/spectrum.h>
+// #include <bhr/3rd/specrend.h>
+#include <bhr/floatimage.h>
+
+#include "../tests/tests.h"
+
 #include <cassert>
 #include <cmath>
 #include <chrono>
 #include <cstring>
 #include <thread>
-
-#include "base.h"
-#include "utility.h"
-#include "colorize.h"
-#include "coordinate.h"
-
-#include "field.h"
-#include "flat.h"
-#include "kerr.h"
-// #include "reissner_nordstrom.h"
-#include "schwarzschild.h"
-#include "settings.h"
-#include "tga.h"
-#include "spectrum.h"
-// #include "3rd/specrend.h"
-#include "floatimage.h"
-
-#include "../tests/tests.h"
 
 int debug = 1;
 

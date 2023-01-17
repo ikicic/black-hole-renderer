@@ -1,7 +1,7 @@
 #ifndef REISSNER_NORDSTROM_H
 #define REISSNER_NORDSTROM_H
 
-#include "spacetime.h"
+#include <bhr/spacetime.h>
 
 class ReissnerNordstromSpacetime
     : public BlackHoleBase<ReissnerNordstromSpacetime> {

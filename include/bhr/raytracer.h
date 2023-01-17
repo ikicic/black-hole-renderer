@@ -1,9 +1,9 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
-#include "physical_constants.h"
-#include "utility.h"
-#include "integration.h"
+#include <bhr/physical_constants.h>
+#include <bhr/utility.h>
+#include <bhr/integration.h>
 
 class Camera {
  public:

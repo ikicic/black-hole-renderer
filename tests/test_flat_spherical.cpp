@@ -1,6 +1,6 @@
-#include "../include/base.h"
-#include "../include/coordinate.h"
-#include "../include/flat.h"
+#include <bhr/base.h>
+#include <bhr/coordinate.h>
+#include <bhr/flat.h>
 
 // bool test_flat_spherical(void) {
 //   FlatSpacetime spacetime;

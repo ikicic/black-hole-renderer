@@ -60,8 +60,8 @@ extern int debug;
 #endif
 /* Params END. */
 
-#include "vector.h"
-#include "coordinate.h"
+#include <bhr/vector.h>
+#include <bhr/coordinate.h>
 
 
 #define DEAD_BLACK_HOLE     1

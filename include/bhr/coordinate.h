@@ -1,10 +1,10 @@
 #ifndef COORDINATE_SYSTEMS_H
 #define COORDINATE_SYSTEMS_H
 
-#include "matrix.h"
-#include "utility.h"
-#include "parameters.h"
-#include "mod.h"
+#include <bhr/matrix.h>
+#include <bhr/utility.h>
+#include <bhr/parameters.h>
+#include <bhr/mod.h>
 
 // TODO: Write interface for spherical coordinates?
 typedef Vector<real_t, 4> Vector4;

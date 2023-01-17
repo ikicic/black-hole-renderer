@@ -1,9 +1,9 @@
-#include "base.h"
+#include <bhr/base.h>
 
 #if CHECK_KERR
-#include "kerr.h"
-#include "schwarzschild.h"
-#include "render.h"
+#include <bhr/kerr.h>
+#include <bhr/schwarzschild.h>
+#include <bhr/render.h>
 
 void check_kerr(void) {
   constexpr int s = 1;

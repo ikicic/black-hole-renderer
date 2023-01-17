@@ -1,5 +1,5 @@
-#include "base.h"
-#include "floatimage.h"
+#include <bhr/base.h>
+#include <bhr/floatimage.h>
 
 
 RGBd *load_floating_point_image(FILE *f, int width, int height) {

@@ -1,7 +1,7 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/euler_heisenberg.h"
-#include "../include/qed_lagrangian.h"
+#include <bhr/euler_heisenberg.h>
+#include <bhr/qed_lagrangian.h>
 
 bool test_euler_heisenberg_special1(void) {
   static const double result1[] = {

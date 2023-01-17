@@ -1,8 +1,8 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/coordinate.h"
-#include "../include/kerr.h"
-#include "../include/autodiff.h"
+#include <bhr/coordinate.h>
+#include <bhr/kerr.h>
+#include <bhr/autodiff.h>
 
 template <typename _T, typename _Coord>
 void _get_kerr_autodiff_christoffel(

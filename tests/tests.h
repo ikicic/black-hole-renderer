@@ -4,9 +4,9 @@
 #define TESTS_ENABLED 0
 
 #if TESTS_ENABLED
-#include "../include/base.h"
-#include "../include/coordinate.h"
-#include "../include/utility.h"
+#include <bhr/base.h>
+#include <bhr/coordinate.h>
+#include <bhr/utility.h>
 
 
 /* Coordinate systems */

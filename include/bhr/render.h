@@ -1,14 +1,14 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include "disk.h"
-#include "raytracer.h"
-#include "geodesic.h"
-#include "texture.h"
-#include "spectrum.h"
-#include "3rd/specrend.h"
+#include <bhr/disk.h>
+#include <bhr/raytracer.h>
+#include <bhr/geodesic.h>
+#include <bhr/texture.h>
+#include <bhr/spectrum.h>
+#include <bhr/3rd/specrend.h>
 
-#include "line.h"
+#include <bhr/line.h>
 
 #include <mutex>
 #include <stack>

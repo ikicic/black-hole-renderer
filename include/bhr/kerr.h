@@ -1,7 +1,7 @@
 #ifndef KERR_H
 #define KERR_H
 
-#include "spacetime.h"
+#include <bhr/spacetime.h>
 
 void check_kerr(void);
 

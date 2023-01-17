@@ -1,7 +1,7 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/schwarzschild.h"
-#include "../include/kerr.h"
+#include <bhr/schwarzschild.h>
+#include <bhr/kerr.h>
 
 bool test_boyer_lindquist2(void) {
   // /* Comparison with spherical for a = 0 */

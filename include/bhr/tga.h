@@ -1,7 +1,7 @@
 #ifndef TGA_H
 #define TGA_H
 
-#include "texture.h"
+#include <bhr/texture.h>
 
 bool load_TGA(Image *imaeg, FILE *f);
 bool save_TGA(RGBA *image, int width, int height, FILE *f);

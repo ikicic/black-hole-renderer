@@ -1,8 +1,8 @@
 #ifndef QED_LAGRANGIAN_H
 #define QED_LAGRANGIAN_H
 
-#include "autodiff_2nd.h"
-#include "numerics.h"
+#include <bhr/autodiff_2nd.h>
+#include <bhr/numerics.h>
 #include <tuple>
 
 namespace QED {

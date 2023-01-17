@@ -5,7 +5,7 @@
 #include <iostream>
 #include <utility>
 
-#include "utility.h"
+#include <bhr/utility.h>
 
 template<typename _T, int _N>
 struct first_partial_derivatives {

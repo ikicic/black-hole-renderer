@@ -1,11 +1,11 @@
-#include "base.h"
-#include "euler_heisenberg.h"
-#include "qed_lagrangian.h"
-// #include "flat.h"  // Disabled.
-#include "raytracer.h"
-#include "autodiff.h"
+#include <bhr/base.h>
+#include <bhr/euler_heisenberg.h>
+#include <bhr/qed_lagrangian.h>
+// #include <bhr/flat.h>  // Disabled.
+#include <bhr/raytracer.h>
+#include <bhr/autodiff.h>
 
-#include "3rd/sha1.h"
+#include <bhr/3rd/sha1.h>
 
 #include <chrono>
 #include <thread>

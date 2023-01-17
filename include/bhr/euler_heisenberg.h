@@ -2,7 +2,7 @@
 #define EULER_HEISENBERG_H
 
 #include <complex>
-#include "numerics.h"
+#include <bhr/numerics.h>
 
 /* REFERENCE: 0107135v2 - QED Effective Action Revisited */
 

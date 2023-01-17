@@ -1,5 +1,5 @@
-#include "base.h"
-#include "tga.h"
+#include <bhr/base.h>
+#include <bhr/tga.h>
 
 #include <cstdio>
 #include <cstdlib>

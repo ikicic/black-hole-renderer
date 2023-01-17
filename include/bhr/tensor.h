@@ -1,9 +1,9 @@
 #ifndef TENSOR_H
 #define TENSOR_H
 
-#include "autodiff_2nd.h"
-#include "physical_constants.h"
-#include "qed_lagrangian.h"
+#include <bhr/autodiff_2nd.h>
+#include <bhr/physical_constants.h>
+#include <bhr/qed_lagrangian.h>
 
 template <typename _T> struct Christoffel {
   typedef _T matrix44[4][4];

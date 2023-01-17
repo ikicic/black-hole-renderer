@@ -1,6 +1,6 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/integration.h"
+#include <bhr/integration.h>
 
 bool test_integrate__RGF45(void) {
   // Solve f'(x) = 1 + f^2(x), f(0) = 0 --> f(x) = tan(x)

@@ -1,12 +1,12 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/tensor.h"
-#include "../include/flat.h"
-#include "../include/schwarzschild.h"
-#include "../include/field.h"
+#include <bhr/tensor.h>
+#include <bhr/flat.h>
+#include <bhr/schwarzschild.h>
+#include <bhr/field.h>
 
-#include "../include/euler_heisenberg.h"
-#include "../include/qed_lagrangian.h"
+#include <bhr/euler_heisenberg.h>
+#include <bhr/qed_lagrangian.h>
 
 template <typename _Coord, typename _Spacetime>
 bool _test_geoacc(const _Spacetime &spacetime,

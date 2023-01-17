@@ -1,7 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "utility.h"
+#include <bhr/utility.h>
 
 template <typename _T, int _N>
 struct Matrix {

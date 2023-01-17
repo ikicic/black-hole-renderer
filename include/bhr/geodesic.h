@@ -1,12 +1,12 @@
 #ifndef GEODESIC_H
 #define GEODESIC_H
 
-#include "utility.h"
-#include "tensor.h"
-#include "matrix.h"
+#include <bhr/utility.h>
+#include <bhr/tensor.h>
+#include <bhr/matrix.h>
 
 #if MAGNETIC_FIELD_FULL
-#include "euler_heisenberg.h"
+#include <bhr/euler_heisenberg.h>
 #endif
 
 template <typename _Spacetime, typename _Field, typename _Coord>

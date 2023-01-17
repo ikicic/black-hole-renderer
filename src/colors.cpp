@@ -1,5 +1,5 @@
-#include "base.h"
-#include "colors.h"
+#include <bhr/base.h>
+#include <bhr/colors.h>
 
 static const RGBd scale[] = {
 //   {.5, 0, 0},

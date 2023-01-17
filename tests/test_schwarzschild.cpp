@@ -1,6 +1,6 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/schwarzschild.h"
+#include <bhr/schwarzschild.h>
 
 // bool test_schwarzschild_dipole(void) {
 //   SchwarzschildSpacetime spacetime;

@@ -1,7 +1,7 @@
 #ifndef FLAT_H
 #define FLAT_H
 
-#include "spacetime.h"
+#include <bhr/spacetime.h>
 
 class FlatSpacetime : public SpacetimeBase<FlatSpacetime> {
   typedef SpacetimeBase<FlatSpacetime> _Parent;

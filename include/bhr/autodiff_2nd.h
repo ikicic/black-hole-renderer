@@ -1,7 +1,7 @@
 #ifndef AUTODIFF_2ND_H
 #define AUTODIFF_2ND_H
 
-#include "autodiff.h"
+#include <bhr/autodiff.h>
 
 template <typename _T, int _N>
 struct second_partial_derivatives {

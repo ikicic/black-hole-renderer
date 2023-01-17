@@ -2,7 +2,7 @@
 #ifndef SPECTRUM_H
 #define SPECTRUM_H
 
-#include "vector.h"
+#include <bhr/vector.h>
 
 void calculate_spectrum_colors(void);
 RGBd get_black_body_color(double temperature);

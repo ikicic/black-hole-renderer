@@ -1,6 +1,6 @@
 #include "tests.h"
 #if TESTS_ENABLED
-#include "../include/qed_lagrangian.h"
+#include <bhr/qed_lagrangian.h>
 
 // WARNING: Testing no-autodiff version only!
 bool test_magnetic_only_lagrangian__base(void) {

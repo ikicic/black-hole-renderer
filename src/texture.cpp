@@ -1,12 +1,12 @@
+#include <bhr/base.h>
+#include <bhr/texture.h>
+#include <bhr/tga.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
-
-#include "base.h"
-#include "texture.h"
-#include "tga.h"
 
 #define TEXTURE_FILTER_NONE       1
 #define TEXTURE_FILTER_BILINEAR   2

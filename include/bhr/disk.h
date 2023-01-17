@@ -3,13 +3,13 @@
 
 #if RENDER_DISK
 
-#include "physical_constants.h"
-#include "texture.h"
-#include "mod.h"
-#include "spectrum.h"
+#include <bhr/physical_constants.h>
+#include <bhr/texture.h>
+#include <bhr/mod.h>
+#include <bhr/spectrum.h>
 
-#include "chandra1960.h"
-#include "colors.h"
+#include <bhr/chandra1960.h>
+#include <bhr/colors.h>
 #include <tuple>
 
 #if DISK_RELIEF_TEXTURE
