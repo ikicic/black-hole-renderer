@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/schwarzschild.h>
 #include <bhr/kerr.h>
 
@@ -54,5 +53,3 @@ bool test_boyer_lindquist(void) {
 #endif
   return true;
 }
-
-#endif

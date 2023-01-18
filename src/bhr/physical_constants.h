@@ -2,6 +2,7 @@
 #define PHYSICAL_CONSTANTS_H
 
 #include <cassert>
+#include <bhr/float_helpers.h>
 
 #define TEST_UNITS  0
 #if TEST_UNITS
@@ -52,6 +53,13 @@ inline constexpr auto sqrt(Quantity<_A, _B, _C, _D> x) {
   return Quantity<_A / 2, _B / 2, _C / 2, _D / 2>(sqrt(x.value));
 }
 
+template <int _A, int _B, int _C, int _D>
+inline constexpr auto constexpr_sqrt(Quantity<_A, _B, _C, _D> x) {
+  static_assert(_A % 2 == 0 && _B % 2 == 0 && _C % 2 == 0 && _D % 2 == 0);
+  return Quantity<_A / 2, _B / 2, _C / 2, _D / 2>(constexpr_sqrt(x.value));
+}
+
+
 template <int _A1, int _B1, int _C1, int _D1,
           int _A2, int _B2, int _C2, int _D2>
 inline constexpr auto operator*(
@@ -96,7 +104,7 @@ constexpr QUANTITY(1, 1,-2, 0) UNIT_N = UNIT_kg * UNIT_m / UNIT_s / UNIT_s;
 constexpr QUANTITY(1, 2,-2, 0) UNIT_J = UNIT_N * UNIT_m;
 constexpr QUANTITY(1, 2,-3, 0) UNIT_W = UNIT_J / UNIT_s;
 constexpr QUANTITY(0, 0,-2, 2) UNIT_A_sqr = 4e-7 * M_PI * UNIT_N / PHY_mu0;
-constexpr QUANTITY(0, 0,-1, 1) UNIT_A = sqrt(UNIT_A_sqr);
+constexpr QUANTITY(0, 0,-1, 1) UNIT_A = constexpr_sqrt(UNIT_A_sqr);
 constexpr QUANTITY(0, 0, 0, 1) UNIT_C = UNIT_A * UNIT_s;
 
 constexpr QUANTITY(1, 2,-2,-1) UNIT_V = UNIT_kg * sqr(UNIT_m) / (sqr(UNIT_s) * UNIT_C);

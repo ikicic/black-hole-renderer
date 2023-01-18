@@ -97,7 +97,7 @@ void render_textured_axes_aligned_rectangle(
          + (w4 * invw) * t4;
   };
 
-  auto ADD = [output, x1, y1, x2, y2, &wachspress_mix, &texture, &width](
+  auto ADD = [output, &wachspress_mix, &texture, &width](
       int X, int Y, _T xa, _T ya, _T xb, _T yb) {
 
     // Wachspress Coordinates.

@@ -4,12 +4,6 @@
 #include <cmath>
 #include <vector>
 
-#ifndef __clang__
-# define CMATH_CONSTEXPR  constexpr
-#else
-# define CMATH_CONSTEXPR
-#endif
-
 typedef double real_t;
 typedef double colreal_t;  // color real
 
@@ -149,6 +143,7 @@ template <typename _FullGeodesicData>
 class Snapshot {
  public:
   Snapshot(int _width, int _height) : width(_width), height(_height) {}
+  virtual ~Snapshot() = default;
   virtual bool load(FILE *f) = 0;
   virtual bool save(FILE *f) const = 0;
   virtual void save_extra(void) const { };

@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 
 bool test_spherical(void) {
   for (int _test = 0; _test < 100; ++_test) {
@@ -22,4 +21,3 @@ bool test_spherical(void) {
 
   return true;
 }
-#endif

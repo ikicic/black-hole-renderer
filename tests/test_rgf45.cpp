@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/integration.h>
 
 bool test_integrate__RGF45(void) {
@@ -20,4 +19,3 @@ bool test_integrate__RGF45(void) {
 
   return true;
 }
-#endif

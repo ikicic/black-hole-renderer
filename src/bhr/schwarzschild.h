@@ -109,7 +109,7 @@ class SchwarzschildDipole {
         mu(1e29 * UNIT_J / UNIT_T) {
     double surface_max_B = _surface_magnetic_field().second;
     mu *= surface_B / surface_max_B;
-    __debug_info();
+    _debug_info();
   }
 
   template <typename _T>
@@ -187,7 +187,7 @@ class SchwarzschildDipole {
     return std::make_pair(sum / N, max);
   }
 
-  inline void __debug_info(void) const {
+  inline void _debug_info(void) const {
     constexpr int N = 21;
     for (int i = 0; i < N; ++i) {
       double theta = (1e-5 + (1 - 2e-5) * i) * M_PI / (N - 1);

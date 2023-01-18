@@ -3,6 +3,12 @@
 
 #include <cassert>
 
+#ifndef __clang__
+# define CMATH_CONSTEXPR  constexpr
+#else
+# define CMATH_CONSTEXPR
+#endif
+
 template <typename T>
 constexpr inline auto sqr(T x) { return x * x; }
 

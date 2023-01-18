@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/autodiff_2nd.h>
 
 #include <cmath>
@@ -117,5 +116,3 @@ bool test_autodiff_2nd(void) {
   // }
   return true;
 }
-
-#endif

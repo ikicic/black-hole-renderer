@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/qed_lagrangian.h>
 
 // WARNING: Testing no-autodiff version only!
@@ -306,4 +305,3 @@ bool test_qed_metric_correction_lambda__low_limit(void) {
 //   if (!_test_qed_metric_correction__flat()) return false;
 //   return true;
 // }
-#endif

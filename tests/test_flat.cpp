@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/flat.h>
 #include <bhr/field.h>
 
@@ -66,4 +65,3 @@ bool test_flat_magnetic_field(void) {
 //
 // }
 //
-#endif

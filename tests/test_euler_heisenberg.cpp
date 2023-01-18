@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/euler_heisenberg.h>
 #include <bhr/qed_lagrangian.h>
 
@@ -112,7 +111,8 @@ bool test_euler_heisenberg_special1(void) {
         [](double x) { return EH::__lagrangian_special1(x); },
         result1,
         sizeof(result1) / sizeof(result1[0]),
-        2.3e-15)) {
+        // 2.3e-15  // For gcc, whereas clang needs higher.
+        2.9e-15)) {
     return false;
   }
 
@@ -542,7 +542,8 @@ bool test_euler_heisenberg_special2(void) {
         [](double x) { return EH::__lagrangian_special2(x); },
         result2,
         sizeof(result2) / sizeof(result2[0]),
-        8.1e-14)) {
+        // 8.1e-14  // For gcc, whereas clang needs higher.
+        8.2e-14)) {
     return false;
   }
 
@@ -707,4 +708,3 @@ bool test_euler_heisenberg(void) {
 
   return true;
 }
-#endif

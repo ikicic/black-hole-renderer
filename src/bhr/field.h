@@ -16,7 +16,7 @@ class FlatDipole {
     std::pair<double, double> surface_B = _surface_magnetic_field();
     m *= _surface_B / surface_B.second;
     _recalc_dipole();
-    __debug_info();
+    _debug_info();
   }
 
   inline void _recalc_dipole(void) {
@@ -88,10 +88,11 @@ class FlatDipole {
       sum += B;
     }
 
+    fprintf(stderr, "_surface_magnetic_field  sum=%lg N=%d max=%lg  r=%lg\n", sum, N, max, NEUTRON_STAR_r);
     return std::make_pair(sum / N, max);
   }
 
-  inline void __debug_info(void) const {
+  inline void _debug_info(void) const {
     constexpr int N = 21;
     for (int i = 0; i < N; ++i) {
       double theta = (1e-5 + (1 - 2e-5) * i) * M_PI / (N - 1);

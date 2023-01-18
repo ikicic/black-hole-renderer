@@ -44,7 +44,7 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
       const BoyerLindquistVector4<_T> &position) const {
     PARAMS_CONSTEXPR auto aa = sqr(a);
     PARAMS_CONSTEXPR auto rs = (2 * PHY_G / sqr(PHY_c)) * M;
-    PARAMS_CONSTEXPR auto sqrtM = std::sqrt(M);
+    PARAMS_CMATH_CONSTEXPR auto sqrtM = std::sqrt(M);
 
     // CONSTANTS MISSING.
     // REFERENCES MISSING.

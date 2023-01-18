@@ -77,7 +77,7 @@ inline void integrate__RGF45(
   constexpr real_t SAFETY = real_t(0.84);
   _Vector out;
 
-  while (t) {
+  while (t != 0.0) {
     if (h > t) h = t;
     const real_t R = integration_step__RGF45(RHS, h, initial, &out);
     if (R <= epsilon) {

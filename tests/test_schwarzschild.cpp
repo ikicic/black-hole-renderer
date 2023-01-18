@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/schwarzschild.h>
 
 // bool test_schwarzschild_dipole(void) {
@@ -22,4 +21,3 @@
 //
 //   return true;
 // }
-#endif

@@ -1,5 +1,4 @@
 #include "tests.h"
-#if TESTS_ENABLED
 #include <bhr/coordinate.h>
 #include <bhr/kerr.h>
 #include <bhr/autodiff.h>
@@ -95,4 +94,3 @@ bool test_kerr(void) {
 
   return true;
 }
-#endif

@@ -14,8 +14,6 @@
 // #include <bhr/3rd/specrend.h>
 #include <bhr/floatimage.h>
 
-#include "../tests/tests.h"
-
 #include <cassert>
 #include <cmath>
 #include <chrono>
@@ -184,9 +182,11 @@ bool generate_main(const Settings &S,
     // return dlambda * (1 - 0.9 * exp(-dd / 0.001));
   };
 
-  std::unique_ptr<Snapshot<_FullGeodesicData>> snapshot(S.recursive
-      ? (Snapshot<_FullGeodesicData> *)new SnapshotRecursive<_FullGeodesicData>(width, height)
-      : (Snapshot<_FullGeodesicData> *)new SnapshotMatrix<_FullGeodesicData>(width, height));
+  using SnapshotPtr = std::unique_ptr<Snapshot<_FullGeodesicData>>;
+  SnapshotPtr snapshot =
+      S.recursive
+      ? (SnapshotPtr)std::make_unique<SnapshotRecursive<_FullGeodesicData>>(width, height)
+      : (SnapshotPtr)std::make_unique<SnapshotMatrix<_FullGeodesicData>>(width, height);
   RGBd *float_image = nullptr;
   std::string auto_geodesics_filename = S.get_auto_geodesics_filename();
   std::string output_float = S.get_float_filename();
@@ -459,12 +459,6 @@ int main(int argc, char **argv) {
 #error Cannot check lambda interpolation precision when cache is disabled.
 #elif GENERATE_LAMBDAS
 #error Cannot generate lambdas when cache is disabled.
-#endif
-
-#if TESTS_ENABLED
-  if (!test_all())
-    return 1;
-  return 0;
 #endif
 
   auto start_time = std::chrono::system_clock::now();

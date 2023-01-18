@@ -1,7 +1,8 @@
 #include "tests.h"
-#if TESTS_ENABLED
 
 #include <cstdio>
+
+int debug = 1;  // Global variable in the bhr_lib.
 
 #define TEST(func, name) \
   printf("Testing %s... ", name); \
@@ -12,7 +13,8 @@
     return false; \
   }
 
-bool test_all(void) {
+static bool test_all(void) {
+  TEST(test_float_helpers, "Floating-point helper functions");
   TEST(test_euler_heisenberg_special1, "Euler-Heisenberg Special Function 1");
   TEST(test_euler_heisenberg_special2, "Euler-Heisenberg Special Function 2");
   TEST(test_autodiff_2nd, "Automatic Differentiation 2nd order");
@@ -35,4 +37,7 @@ bool test_all(void) {
   return true;
 }
 
-#endif
+
+int main() {
+  return test_all() ? 0 : 1;
+}

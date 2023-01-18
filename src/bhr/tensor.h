@@ -53,14 +53,6 @@ inline void __print_matrix444(const double tmp[4][4][4]) {
   fprintf(stderr, "\n");
 }
 
-template <typename _T, template <typename> class _Vector, typename Func>
-inline _Vector<_T> get_electric_field(
-    const Func &potential_l_func,
-    const _Vector<_T> &position_u,
-    const _Vector<_T> &velocity_u) {
-
-}
-
 template <
     typename _T,
     template <typename> class _Vector,

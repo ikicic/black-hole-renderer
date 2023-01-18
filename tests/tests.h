@@ -1,13 +1,12 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#define TESTS_ENABLED 0
-
-#if TESTS_ENABLED
 #include <bhr/base.h>
 #include <bhr/coordinate.h>
 #include <bhr/utility.h>
 
+/* Misc */
+bool test_float_helpers();
 
 /* Coordinate systems */
 bool test_spherical(void);
@@ -39,8 +38,6 @@ bool test_geodesic_acceleration__magnetic_field(void);
 bool test_schwarzschild_dipole(void);
 
 
-bool test_all(void);
-
 
 
 /* Utility */
@@ -71,9 +68,11 @@ template <typename _T> inline void random_vector(
   _random_spherical_vector(vec, low, high);
 }
 
-template <typename _T>
+template <typename _T,
+          typename ParamFunc,
+          typename Func>
 inline bool evaluate_and_compare(
-    auto param_func, auto func, const _T *expected, int N, _T epsilon) {
+    ParamFunc param_func, Func func, const _T *expected, int N, _T epsilon) {
   for (int i = 0; i < N; ++i) {
     auto param = param_func(i);
     _T received = func(param_func(i));
@@ -85,6 +84,7 @@ inline bool evaluate_and_compare(
       std::cerr << "Received: " << received << '\n';
       std::cerr << "Expected: " << expected[i] << '\n';
       std::cerr << "Relative error: " << error << '\n';
+      std::cerr << "Maximum tolerable error: " << epsilon << '\n';
       return false;
     }
   }
@@ -117,5 +117,4 @@ inline bool _compare_eq_rel(const _T &received,
 #define compare_eq_rel(a, b, c, d) \
    (_compare_eq_rel((a), (b), (c), (d), __FILE__, __LINE__))
 
-#endif
 #endif

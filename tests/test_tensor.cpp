@@ -1,19 +1,21 @@
 #include "tests.h"
-#if TESTS_ENABLED
-#include <bhr/tensor.h>
-#include <bhr/flat.h>
-#include <bhr/schwarzschild.h>
-#include <bhr/field.h>
-
 #include <bhr/euler_heisenberg.h>
+#include <bhr/field.h>
+#include <bhr/flat.h>
 #include <bhr/qed_lagrangian.h>
+#include <bhr/schwarzschild.h>
+#include <bhr/tensor.h>
 
-template <typename _Coord, typename _Spacetime>
-bool _test_geoacc(const _Spacetime &spacetime,
-                  auto potential_l_func,
-                  auto F_ll_func,
-                  double epsilon,
-                  bool compare_empty) {
+template <typename _Coord,
+          typename _Spacetime,
+          typename PotentialLFunc,
+          typename FLLFunc>
+static bool _test_geoacc(
+    const _Spacetime &spacetime,
+    PotentialLFunc potential_l_func,
+    FLLFunc F_ll_func,
+    double epsilon,
+    bool compare_empty) {
   // auto F_ll_func = [&](auto position_u) {
   //   typedef typename decltype(position_u)::value_type _T;
   //   typedef first_partial_derivatives<_T, 4> fpds;
@@ -86,6 +88,10 @@ bool _test_geoacc(const _Spacetime &spacetime,
 
 
 bool test_geodesic_acceleration__magnetic_field(void) {
+  if (NEUTRON_STAR_r == 0.0) {
+    printf("Neutron star r=0... SKIPPING! ");
+    return true;
+  }
   if (!test_flat_magnetic_field()) {
     fprintf(stderr, "Flat Magnetic Field test is required to pass! Aborting!");
     return false;
@@ -129,4 +135,3 @@ bool test_geodesic_acceleration__magnetic_field(void) {
 
   return true;
 }
-#endif
