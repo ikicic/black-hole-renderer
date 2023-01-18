@@ -10,8 +10,8 @@ namespace EH {
 
 void generate_lambdas(void);
 
-template <typename _T>
-_T __lagrangian_special1(const _T &x) {
+template <typename T>
+T __lagrangian_special1(const T &x) {
   // `x` is proportional to `a`.
   if (x < 0.014) {
     static const real_t coef[9] = {
@@ -25,7 +25,7 @@ _T __lagrangian_special1(const _T &x) {
       +1.3076743680000000000000000000000000e12,
       -3.5568742809600000000000000000000000e14,
     };
-    _T xx = sqr(x);
+    T xx = sqr(x);
     return xx * evaluate_polynomial(coef, xx);
   }
 
@@ -182,7 +182,7 @@ _T __lagrangian_special1(const _T &x) {
     -0.021192624150326990579349838848307044,
     1.0000000000000000000000000000000000
   };
-  _T result = evaluate_pade(num1, den1, x);
+  T result = evaluate_pade(num1, den1, x);
 
   static const real_t num2[] = {
     -0.00037234226852870920667530837022362446, // x^0
@@ -204,8 +204,8 @@ _T __lagrangian_special1(const _T &x) {
 }
 
 
-template <typename _T>
-_T __lagrangian_special2(const _T &x) {
+template <typename T>
+T __lagrangian_special2(const T &x) {
   // `x` is proportional to `b`.
   if (x < 0.014) {
     static const real_t coef[] = {
@@ -219,7 +219,7 @@ _T __lagrangian_special2(const _T &x) {
       2.6153487360000000000000000000000000e12,
       7.113748561920000000000000000000000e14,
     };
-    _T xx = sqr(x);
+    T xx = sqr(x);
     return xx * evaluate_polynomial(coef, xx);
   }
 
@@ -595,8 +595,8 @@ _T __lagrangian_special2(const _T &x) {
     -1.00000000000000000000000000000000000000000000
   };
 
-  _T xx = sqr(x);
-  _T result = evaluate_pade(num1, den1, xx);
+  T xx = sqr(x);
+  T result = evaluate_pade(num1, den1, xx);
 
   static const real_t num2[] = {
     0.000744684537057418413350616740447248921825193012, // x^0
@@ -618,10 +618,10 @@ _T __lagrangian_special2(const _T &x) {
 }
 
 
-template <typename _T, typename _Factor>
-_T __lagrangian_special_coth(const _T &x, const _T &y, const _Factor &factor) {
+template <typename T, typename Factor>
+T __lagrangian_special_coth(const T &x, const T &y, const Factor &factor) {
   /* Calculates x * y * coth(factor * x / y) correctly. */
-  _T inner = factor * x / y;
+  T inner = factor * x / y;
   if (factor * x < 0.00001 * y)
     return (sqr(y) / factor) * (1 + sqr(inner) / 3);
   if (factor * x > 1000 * y)
@@ -630,36 +630,36 @@ _T __lagrangian_special_coth(const _T &x, const _T &y, const _Factor &factor) {
   return x * y * coth(inner);
 }
 
-template <typename _T>
-_T __lagrangian_exp_inv(const _T &x) {
+template <typename T>
+T __lagrangian_exp_inv(const T &x) {
   /* Calculates exp(-1 / x) for x > 0 correctly. */
   using std::exp;
   if (x < 1e-8)
-    return _T(0);  // Not correct in general.
+    return T(0);  // Not correct in general.
   return exp(-inverse(x));
 }
 
 // DO NOT USE std::complex.
 // http://stackoverflow.com/q/11108743/2203044
-template <typename _T>
-std::pair<_T, _T> __lagrangian_ab_helper(const _T &a, const _T &b) {
+template <typename T>
+std::pair<T, T> __lagrangian_ab_helper(const T &a, const T &b) {
   using std::abs;
   constexpr double EPSILON = 1e-16;
 
-  _T real = _T();
-  _T realc = _T();
-  _T imag = _T();
-  _T term;
+  T real = T();
+  T realc = T();
+  T imag = T();
+  T term;
   for (int n = 1; n <= 1000000; ++n) {
     double inv_n_pi = 1 / (M_PI * n);
-    _T ax = inv_n_pi * a;
-    _T bx = inv_n_pi * b;
+    T ax = inv_n_pi * a;
+    T bx = inv_n_pi * b;
 
-    _T cotha = __lagrangian_special_coth(a, b, n * M_PI);
-    _T cothb = __lagrangian_special_coth(b, a, n * M_PI);
+    T cotha = __lagrangian_special_coth(a, b, n * M_PI);
+    T cothb = __lagrangian_special_coth(b, a, n * M_PI);
     // imag += inv_n_pi * cotha * __lagrangian_exp_inv(bx);
-    // _T an = cothb * __lagrangian_special1(ax) / n;
-    // _T dn = cotha * __lagrangian_special2(bx) * 0.5 / n;
+    // T an = cothb * __lagrangian_special1(ax) / n;
+    // T dn = cotha * __lagrangian_special2(bx) * 0.5 / n;
     term = inv_n_pi * (cothb * __lagrangian_special1(ax)
                      - cotha * __lagrangian_special2(bx) * 0.5);
     {
@@ -669,8 +669,8 @@ std::pair<_T, _T> __lagrangian_ab_helper(const _T &a, const _T &b) {
 #error This method is using Kahan summation algorithm, please make sure \
       that -ffast-math does not interfere with it.
 #endif
-      _T realy = term - realc;
-      _T realt = real + realy;
+      T realy = term - realc;
+      T realt = real + realy;
       realc = (realt - real) - realy;
       real = realt;
     }
@@ -694,23 +694,23 @@ std::pair<_T, _T> __lagrangian_ab_helper(const _T &a, const _T &b) {
   return {real, imag};
 }
 
-template <typename _T>
-inline std::pair<_T, _T> lagrangian__dimless(_T F, _T G) {
+template <typename T>
+inline std::pair<T, T> lagrangian__dimless(T F, T G) {
   using std::sqrt;
   F += 1e-20;
   G += 1e-20;
-  _T a = sqrt(sqrt(sqr(F) + sqr(G)) + F);
-  _T b = G / a;
+  T a = sqrt(sqrt(sqr(F) + sqr(G)) + F);
+  T b = G / a;
 
-  std::pair<_T, _T> result = __lagrangian_ab_helper(a, b);
+  std::pair<T, T> result = __lagrangian_ab_helper(a, b);
   result.first *= PHY_alpha;
   result.second *= PHY_alpha;
   return result;
 }
 
-template <typename _T>
-inline std::pair<_T, _T> lagrangian(_T F, _T G) {
-  std::pair<_T, _T> result = lagrangian__dimless(
+template <typename T>
+inline std::pair<T, T> lagrangian(T F, T G) {
+  std::pair<T, T> result = lagrangian__dimless(
       F / sqr(PHY_Bc),
       G / sqr(PHY_Bc));
   result.first *= sqr(PHY_Bc);
@@ -718,13 +718,13 @@ inline std::pair<_T, _T> lagrangian(_T F, _T G) {
   return result;
 }
 
-template <typename _T>
-inline _T lagrangian_real__dimless(const _T &F, const _T &G) {
+template <typename T>
+inline T lagrangian_real__dimless(const T &F, const T &G) {
   return lagrangian__dimless(F, G).first;
 }
 
-template <typename _T>
-inline _T lagrangian_real(const _T &F, const _T &G) {
+template <typename T>
+inline T lagrangian_real(const T &F, const T &G) {
   return lagrangian(F, G).first;
 }
 

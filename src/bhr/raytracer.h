@@ -107,23 +107,23 @@ class ProjectionCamera : public Camera {
 
 
 
-template <typename _BasicGeodesicState, typename _Spacetime, typename _Field>
+template <typename BasicGeodesicState, typename Spacetime, typename Field>
 std::pair<real_t, real_t> advance_geodesic__RGF45(
-    const _Spacetime &spacetime,
-    const _Field &field,
+    const Spacetime &spacetime,
+    const Field &field,
     const real_t min_h,
     real_t h,
     const real_t max_h,
     const real_t epsilon,
-    const _BasicGeodesicState &basic,
-    _BasicGeodesicState * const output) {
+    const BasicGeodesicState &basic,
+    BasicGeodesicState * const output) {
   /* basic must not be the same object as *output. */
 
   constexpr real_t SAFETY = real_t(0.84);
   constexpr real_t SAFETY_INC = real_t(1.2);
   constexpr real_t SAFETY_INC_MAX = real_t(3.0);
 
-  auto RHS = [&spacetime, &field](const _BasicGeodesicState &st) {
+  auto RHS = [&spacetime, &field](const BasicGeodesicState &st) {
     return st.integration_step(spacetime, field);
   };
 
@@ -164,26 +164,26 @@ std::pair<real_t, real_t> advance_geodesic__RGF45(
 
 
 
-template <typename _FullGeodesicData, typename _Coord,
-          typename _Spacetime, typename _Field, typename Func>
+template <typename FullGeodesicData, typename Coord,
+          typename Spacetime, typename Field, typename Func>
 auto generate_geodesic(
-    const _Spacetime &spacetime,
-    const _Field &field,
+    const Spacetime &spacetime,
+    const Field &field,
     Func break_condition_func,
-    _Coord position,
-    _Coord direction,
+    Coord position,
+    Coord direction,
     int N,
     real_t dlambda,
-    _FullGeodesicData *output)
+    FullGeodesicData *output)
         -> decltype(break_condition_func(position, direction)) {
 
   typedef decltype(break_condition_func(position, direction)) return_type;
-  // typedef typename _Coord::value_type _T;
+  // typedef typename Coord::value_type T;
 
   const real_t dlambda_min = dlambda / 100000;
   const real_t dlambda_max = dlambda * 100;
 
-  typename _FullGeodesicData::basic_type yn(position, direction), yn1;
+  typename FullGeodesicData::basic_type yn(position, direction), yn1;
 
   for (int n = 0; n < N; ++n) {
     if (yn.position.get_r() < NEUTRON_STAR_r * 10) {

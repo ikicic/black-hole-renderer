@@ -19,8 +19,8 @@ namespace QED {
   constexpr double lambda1 = 8 * _b / _a;
   constexpr double lambda2 = 14 * _b / _a;
 
-  template <typename _T>
-  _T lagrangian_lowest_order(const _T &F, const _T &G) {
+  template <typename T>
+  T lagrangian_lowest_order(const T &F, const T &G) {
     return _b * (4 * sqr(F) + 7 * sqr(G));
   };
 
@@ -33,9 +33,9 @@ namespace QED {
 // 1503.00532 results might not be correct, as the functions are used outside
 // of their domains. (?)
 
-template <typename _T>
-_T magnetic_only_lagrangian__base_low(const _T &x) {
-  static const _T coef[] = {
+template <typename T>
+T magnetic_only_lagrangian__base_low(const T &x) {
+  static const T coef[] = {
     0.02222222222222222222222222222222222222222,  // x^4
     -0.0126984126984126984126984126984126984127,  // x^6
     0.0253968253968253968253968253968253968254,   // x^8
@@ -52,13 +52,13 @@ _T magnetic_only_lagrangian__base_low(const _T &x) {
     -2.651652482863668848114295436717175156711e13
   };
   constexpr int N = sizeof(coef) / sizeof(coef[0]);
-  _T xx = sqr(x);
+  T xx = sqr(x);
   return sqr(xx) * evaluate_polynomial(coef, N, xx);
 }
 
-template <typename _T>
-_T magnetic_only_lagrangian__base_middle(const _T &x) {
-  static const _T coef[] = {
+template <typename T>
+T magnetic_only_lagrangian__base_middle(const T &x) {
+  static const T coef[] = {
     -2.402822541120807862746802014035460672084e-11, // x^0
     1.581091978782811783512679891854091345588e-9,   // x^1
     -5.045130989201587775864983624930460474351e-8,  // x^2
@@ -95,10 +95,10 @@ _T magnetic_only_lagrangian__base_middle(const _T &x) {
   return evaluate_polynomial(coef, N, x);
 }
 
-template <typename _T>
-_T magnetic_only_lagrangian__base_high(const _T &x) {
-  _T y = inverse(x);
-  static const _T coef[] = {
+template <typename T>
+T magnetic_only_lagrangian__base_high(const T &x) {
+  T y = inverse(x);
+  static const T coef[] = {
     0.8079657578292062244053600156878870685167,   // y^0
     0.1370778389040188697060345972205020991016,   // y^1
     -0.02504285214915821427916121169815520814094,
@@ -132,15 +132,15 @@ _T magnetic_only_lagrangian__base_high(const _T &x) {
     -9.388332409769767062627552746552179029771e-13
   };
   constexpr int N = sizeof(coef) / sizeof(coef[0]);
-  _T result = evaluate_polynomial(coef, N, y);
+  T result = evaluate_polynomial(coef, N, y);
   result -= x * (0.1447298858494001741434273513530587116473
                + x * 0.7639688479484886137166012671517303816975);
-  result -= std::log(y) * (0.5 + x * (1 + (_T(1.) / 3) * x));
+  result -= std::log(y) * (0.5 + x * (1 + (T(1.) / 3) * x));
   return result;
 }
 
-template <typename _T>
-inline _T magnetic_only_lagrangian__base(const _T &x) {
+template <typename T>
+inline T magnetic_only_lagrangian__base(const T &x) {
   if (x < .13)
     return magnetic_only_lagrangian__base_low(x);
   else if (x < 0.97)
@@ -167,16 +167,16 @@ inline double magnetic_only_lagrangian(double F, double /*G*/) {
   return _magnetic_only_lagrangian(F);
 }
 
-template <typename _T, typename Func>
-std::pair<_T, _T> qed_metric_correction_lambda__dimless(
-    Func dimless_lagrangian_func, const _T &F, const _T &G) {
+template <typename T, typename Func>
+std::pair<T, T> qed_metric_correction_lambda__dimless(
+    Func dimless_lagrangian_func, const T &F, const T &G) {
   // REFERENCE: http://arxiv.org/abs/1501.06234v2
   // NOTE: The article uses F = -F_ab F^ab / 4, while we use F = +F_ab F^ab/4.
   //                        G = -F_ab *F^ab / 4              G = +F_ab *F^ab/4.
   // So, we had to replace each occurence of F and d/dF with -F and -d/dF.
 
   using std::sqrt;
-  typedef second_partial_derivatives<_T, 2> AD2;
+  typedef second_partial_derivatives<T, 2> AD2;
 
   AD2 Fad{F, 1, 0, 0, 0, 0};
   AD2 Gad{G, 0, 1, 0, 0, 0};
@@ -186,28 +186,28 @@ std::pair<_T, _T> qed_metric_correction_lambda__dimless(
   // L.value() -= F;
   L.first(0) -= 1;
 
-  _T det = L.second(0, 0) * L.second(1, 1) - sqr(L.second(0, 1));
-  _T delta1 = -2 * F * det - L.first(0) * (L.second(1, 1) - L.second(0, 0));
-  _T delta2 = -2 * G * det + 2 * L.first(0) * L.second(0, 1);
-  _T delta = sqr(delta1) + sqr(delta2);
-  _T delta_sqrt = sqrt(delta);
+  T det = L.second(0, 0) * L.second(1, 1) - sqr(L.second(0, 1));
+  T delta1 = -2 * F * det - L.first(0) * (L.second(1, 1) - L.second(0, 0));
+  T delta2 = -2 * G * det + 2 * L.first(0) * L.second(0, 1);
+  T delta = sqr(delta1) + sqr(delta2);
+  T delta_sqrt = sqrt(delta);
 
-  _T num = L.first(0) * (L.second(0, 0) + L.second(1, 1)) - 2 * F * det;
-  _T den = 2 * sqr(G) * det
+  T num = L.first(0) * (L.second(0, 0) + L.second(1, 1)) - 2 * F * det;
+  T den = 2 * sqr(G) * det
          + 4 * L.first(0) * (L.second(1, 1) * F - L.second(0, 1) * G)
          - 2 * sqr(L.first(0));
 
   // den seems to be negative.
-  _T lambda1 = (num + delta_sqrt) / den;
-  _T lambda2 = (num - delta_sqrt) / den;
+  T lambda1 = (num + delta_sqrt) / den;
+  T lambda2 = (num - delta_sqrt) / den;
 
   return std::make_pair(lambda1, lambda2);
 }
 
-template <typename _T, typename Func>
-std::pair<_T, _T> qed_metric_correction_lambda(
-    Func lagrangian_func, const _T &F, const _T &G) {
-  std::pair<_T, _T> result = qed_metric_correction_lambda__dimless(
+template <typename T, typename Func>
+std::pair<T, T> qed_metric_correction_lambda(
+    Func lagrangian_func, const T &F, const T &G) {
+  std::pair<T, T> result = qed_metric_correction_lambda__dimless(
       [&lagrangian_func](auto dimlessF, auto dimlessG) {
         return PHY_inv_sqr_Bc * lagrangian_func(
             dimlessF * PHY_sqr_Bc, dimlessG * PHY_sqr_Bc);

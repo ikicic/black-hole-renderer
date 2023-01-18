@@ -119,15 +119,15 @@ class ShakuraSunyaevDisk {
     }
   };
 
-  template <typename _Spacetime, typename _FullGeodesicData>
-  TexCoord get_tex_coord(const _Spacetime &spacetime,
-                         const _FullGeodesicData &geo) const {
-    typedef decltype(geo.basic.position) _Coord;
-    typedef typename _Coord::value_type _T;
+  template <typename Spacetime, typename FullGeodesicData>
+  TexCoord get_tex_coord(const Spacetime &spacetime,
+                         const FullGeodesicData &geo) const {
+    typedef decltype(geo.basic.position) Coord;
+    typedef typename Coord::value_type U;
 
-    Matrix4<_T> tetrad_to_coord = spacetime.keplerian_tetrad_to_coord(
+    Matrix4<U> tetrad_to_coord = spacetime.keplerian_tetrad_to_coord(
         geo.basic.position);
-    _Coord u = tetrad_to_coord * _Coord{1, 0, 0, 0};
+    Coord u = tetrad_to_coord * Coord{1, 0, 0, 0};
     double redshift_inf = -1 / spacetime.dot(
         geo.basic.position, geo.basic.direction, u);
 
@@ -200,27 +200,27 @@ class ShakuraSunyaevDisk {
 
 
 
-template <typename _Coord>
+template <typename Coord>
 class KERTAPDiskTexture {
-  typedef typename _Coord::value_type _T;
+  typedef typename Coord::value_type T;
   static constexpr real_t Gamma = 2.0;
   static constexpr real_t nr = 3.0;
-  const _Coord camera_position;
+  const Coord camera_position;
  public:
 
-  KERTAPDiskTexture(const _Coord &_camera_position)
+  KERTAPDiskTexture(const Coord &_camera_position)
       : camera_position(_camera_position) {}
 
   struct TexCoord {
-    _T r;               // r coordinate.
-    _T weight;
-    _T delta;
-    _T chi;
-    _T chi2_cos;
-    _T chi2_sin;
-    _T mu;
-    _T redshift_inf;    // Redshift assuming the observer is at infinity.
-    _T intensity;
+    T r;               // r coordinate.
+    T weight;
+    T delta;
+    T chi;
+    T chi2_cos;
+    T chi2_sin;
+    T mu;
+    T redshift_inf;    // Redshift assuming the observer is at infinity.
+    T intensity;
 
     friend inline TexCoord operator*(real_t c, const TexCoord &tex) {
       return {c * tex.r, c * tex.weight, c * tex.delta, c * tex.chi,
@@ -237,9 +237,9 @@ class KERTAPDiskTexture {
 
   /* For forward parallel transport (used for testing transport matrix M). */
   struct _ForwardsState {
-    _Coord position;
-    _Coord direction;
-    _Coord vec;
+    Coord position;
+    Coord direction;
+    Coord vec;
 
     template <typename U>
     friend inline void mult(_ForwardsState *self, const U &c) {
@@ -273,16 +273,16 @@ class KERTAPDiskTexture {
     }
   };
 
-  template <typename _Spacetime>
-  _ForwardsState _simulate_forwards(const _Spacetime &spacetime,
+  template <typename Spacetime>
+  _ForwardsState _simulate_forwards(const Spacetime &spacetime,
                                     const std::vector<double> &dlambdas,
                                     _ForwardsState state) const {
     auto RHS = [&spacetime](const _ForwardsState &state) {
       _ForwardsState result;
       auto christoffel_ull = spacetime.get_christoffel_ull(state.position);
       for (int k = 0; k < 4; ++k) {
-        _T tmp1 = _T();
-        _T tmp2 = _T();
+        T tmp1 = T();
+        T tmp2 = T();
         for (int i = 0; i < 4; ++i)
           for (int j = 0; j < 4; ++j) {
             tmp1 += state.direction[i]
@@ -308,51 +308,51 @@ class KERTAPDiskTexture {
     return state;
   }
 
-  template <typename _Spacetime, typename _FullGeodesicData>
-  TexCoord get_tex_coord(const _Spacetime &spacetime,
-                         const _FullGeodesicData &geo) const {
-    Matrix4<_T> tetrad_to_coord = spacetime.keplerian_tetrad_to_coord(
+  template <typename Spacetime, typename FullGeodesicData>
+  TexCoord get_tex_coord(const Spacetime &spacetime,
+                         const FullGeodesicData &geo) const {
+    Matrix4<T> tetrad_to_coord = spacetime.keplerian_tetrad_to_coord(
         geo.basic.position);
-    Matrix4<_T> coord_to_tetrad = matrix4_inverse(tetrad_to_coord);
+    Matrix4<T> coord_to_tetrad = matrix4_inverse(tetrad_to_coord);
 
     /* Polarization in the source local coordinate system. */
-    _Coord photon_hat = coord_to_tetrad * geo.basic.direction;
-    _T E_source__norm = std::sqrt(sqr(photon_hat.phi) + sqr(photon_hat.r));
-    _Coord E_source_hat{0, -photon_hat.phi / E_source__norm,
+    Coord photon_hat = coord_to_tetrad * geo.basic.direction;
+    T E_source__norm = std::sqrt(sqr(photon_hat.phi) + sqr(photon_hat.r));
+    Coord E_source_hat{0, -photon_hat.phi / E_source__norm,
                         0, photon_hat.r / E_source__norm};
-    _Coord E_source = tetrad_to_coord * E_source_hat;
+    Coord E_source = tetrad_to_coord * E_source_hat;
 
-    // _Coord start_position = camera_position;
-    _Coord start_position = geo.extra.start_position;
+    // Coord start_position = camera_position;
+    Coord start_position = geo.extra.start_position;
 
     /* Parallel transport of polarization from source to the observer. */
-    Matrix4<_T> transport_mat = matrix4_inverse(
+    Matrix4<T> transport_mat = matrix4_inverse(
         geo.basic.parallel_transport_lu);
-    _Coord E_observer = E_source * transport_mat;  // Yes, this order.
-    _Coord E_observer_hat =
+    Coord E_observer = E_source * transport_mat;  // Yes, this order.
+    Coord E_observer_hat =
         spacetime.ZAMO_coord_to_tetrad(start_position) * E_observer;
 
-    // _T chi = std::atan(-E_observer_hat.theta / E_observer_hat.phi);
-    _T chi = std::atan2(-E_observer_hat.theta, E_observer_hat.phi);
-    _T chi2_cos = std::cos(2 * chi);
-    _T chi2_sin = std::sin(2 * chi);
+    // T chi = std::atan(-E_observer_hat.theta / E_observer_hat.phi);
+    T chi = std::atan2(-E_observer_hat.theta, E_observer_hat.phi);
+    T chi2_cos = std::cos(2 * chi);
+    T chi2_sin = std::sin(2 * chi);
 
     /* Chandra table values for weight and delta. */
-    _T norm = std::sqrt(
+    T norm = std::sqrt(
         sqr(photon_hat.r) + sqr(photon_hat.theta) + sqr(photon_hat.phi));
-    _T mu = std::abs(photon_hat.theta) / norm;
-    _T chandra_weight, chandra_delta;
+    T mu = std::abs(photon_hat.theta) / norm;
+    T chandra_weight, chandra_delta;
     std::tie(chandra_weight, chandra_delta) = chandra1960(mu);
 
     /* Redshift calculation. */
     // u_hat = {1, 0, 0, 0}
-    _Coord u = tetrad_to_coord * _Coord{1, 0, 0, 0};
-    _T redshift_inf = -1 / spacetime.dot(
+    Coord u = tetrad_to_coord * Coord{1, 0, 0, 0};
+    T redshift_inf = -1 / spacetime.dot(
         geo.basic.position, geo.basic.direction, u);
 
     // Redshifts goes like g^-4, not g^-3! (?)
     // (g = nu_obs / nu_src)
-    _T intensity = chandra_weight
+    T intensity = chandra_weight
                    * std::pow(redshift_inf, this->Gamma - 1 + 4)
                    / std::pow(geo.basic.position.get_r(), this->nr);
 
@@ -379,11 +379,11 @@ class KERTAPDiskTexture {
   }
 
   static constexpr double _arrow_zoom = 30;
-  inline std::pair<_T, _T> get_arrow_vector(const TexCoord &tex) const {
+  inline std::pair<T, T> get_arrow_vector(const TexCoord &tex) const {
     return std::make_pair(_arrow_zoom * tex.delta * std::cos(tex.chi),
                           _arrow_zoom * tex.delta * std::sin(tex.chi));
   }
-  inline _T _get_arrow_scale_01(void) const {
+  inline T _get_arrow_scale_01(void) const {
     return _arrow_zoom * 0.1;
   }
 
@@ -417,9 +417,9 @@ class DummyDiskTexture {
     }
   };
 
-  template <typename _Spacetime, typename _FullGeodesicData>
-  TexCoord get_tex_coord(const _Spacetime &spacetime,
-                         const _FullGeodesicData &geo) const {
+  template <typename Spacetime, typename FullGeodesicData>
+  TexCoord get_tex_coord(const Spacetime &spacetime,
+                         const FullGeodesicData &geo) const {
     const auto &position = geo.basic.position;
     const auto &direction = geo.basic.direction;
     const real_t r = position.get_r();

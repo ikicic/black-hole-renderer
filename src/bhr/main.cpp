@@ -25,14 +25,14 @@ int debug = 1;
 // Hope this isn't reserved by something important.
 #define GIVE_UP(...) { fprintf(stderr, __VA_ARGS__); return false; }
 
-template <typename _FullGeodesicData,
-          typename _Spacetime,
+template <typename FullGeodesicData,
+          typename Spacetime,
           typename DiskTex>
 bool _generate_and_save_image(
-    const _Spacetime &spacetime,
+    const Spacetime &spacetime,
     const char *filename_float,
     const char *filename_image,
-    Snapshot<_FullGeodesicData> *snapshot,
+    Snapshot<FullGeodesicData> *snapshot,
     RGBd *rgb,
 #if SKY_ENABLED
     const Image &sky,
@@ -87,9 +87,9 @@ bool _generate_and_save_image(
   return true;
 }
 
-template <typename _FullGeodesicData>
+template <typename FullGeodesicData>
 bool _save_geodesics(
-    const char *filename, Snapshot<_FullGeodesicData> *snapshot) {
+    const char *filename, Snapshot<FullGeodesicData> *snapshot) {
   FILE *f = fopen(filename, "wb");
   if (f == nullptr) {
     fprintf(stderr, "Error opening file %s for writing!\n", filename);
@@ -107,12 +107,12 @@ bool _save_geodesics(
   return true;
 }
 
-template <typename _FullGeodesicData,
-          typename _SpaceTime,
-          typename _Field = Null>
+template <typename FullGeodesicData,
+          typename Spacetime,
+          typename Field = Null>
 bool generate_main(const Settings &S,
-                   const _SpaceTime &spacetime,
-                   const _Field &field = _Field()) {
+                   const Spacetime &spacetime,
+                   const Field &field = Field()) {
   int width = S.width;
   int height = S.height;
   Camera *raytracer_camera;
@@ -142,17 +142,17 @@ bool generate_main(const Settings &S,
     // Using camera->eye instead of the infinitely distant observer.
     fprintf(stderr, "WARNING: Ortho not fully supported!\n");
   }
-  typedef typename _FullGeodesicData::basic_type::coord_type _Coord;
-  typedef typename _Coord::value_type _T;
+  typedef typename FullGeodesicData::basic_type::coord_type Coord;
+  typedef typename Coord::value_type T;
   Vector3 eye =
       S.ortho ? ((OrthographicProjectionCamera *)raytracer_camera)->eye
               : ((ProjectionCamera *)raytracer_camera)->eye;
-  CartesianVector4<_T> camera_position_cart(extend_vector((_T)0, eye));
-  _Coord camera_position;
+  CartesianVector4<T> camera_position_cart(extend_vector((T)0, eye));
+  Coord camera_position;
   convert_point(Null(), camera_position_cart,
-                spacetime.coord_system_parameters(_Coord()), camera_position);
+                spacetime.coord_system_parameters(Coord()), camera_position);
 # if RENDER_DISK == DISK_KERTAP
-    KERTAPDiskTexture<_Coord> disk_tex(camera_position);
+    KERTAPDiskTexture<Coord> disk_tex(camera_position);
 # else
 # error What kind of a disk with polarization enabled?
 # endif
@@ -182,11 +182,11 @@ bool generate_main(const Settings &S,
     // return dlambda * (1 - 0.9 * exp(-dd / 0.001));
   };
 
-  using SnapshotPtr = std::unique_ptr<Snapshot<_FullGeodesicData>>;
+  using SnapshotPtr = std::unique_ptr<Snapshot<FullGeodesicData>>;
   SnapshotPtr snapshot =
       S.recursive
-      ? (SnapshotPtr)std::make_unique<SnapshotRecursive<_FullGeodesicData>>(width, height)
-      : (SnapshotPtr)std::make_unique<SnapshotMatrix<_FullGeodesicData>>(width, height);
+      ? (SnapshotPtr)std::make_unique<SnapshotRecursive<FullGeodesicData>>(width, height)
+      : (SnapshotPtr)std::make_unique<SnapshotMatrix<FullGeodesicData>>(width, height);
   RGBd *float_image = nullptr;
   std::string auto_geodesics_filename = S.get_auto_geodesics_filename();
   std::string output_float = S.get_float_filename();
@@ -251,7 +251,7 @@ bool generate_main(const Settings &S,
 #if RECURSIVE
       generate_image_recursive(spacetime, field, raytracer_camera, dlambda_func,
           width, height,
-          reinterpret_cast<SnapshotRecursive<_FullGeodesicData> *>(snapshot.get()),
+          reinterpret_cast<SnapshotRecursive<FullGeodesicData> *>(snapshot.get()),
           S.threads, S.max_extra_recursive_depth);
 #else
       assert(0 == 1); // Disabled to speed up compilation.
@@ -263,7 +263,7 @@ bool generate_main(const Settings &S,
       generate_image(
           spacetime, field, raytracer_camera, dlambda_func,
           width, height,
-          reinterpret_cast<SnapshotMatrix<_FullGeodesicData> *>(snapshot.get()),
+          reinterpret_cast<SnapshotMatrix<FullGeodesicData> *>(snapshot.get()),
           S.threads);
 #endif
 #undef RECURSIVE
@@ -299,21 +299,21 @@ bool generate_main(const Settings &S,
   return true;
 }
 
-// template <typename _Coord> using __FullGeodesicData =
+// template <typename Coord> using __FullGeodesicData =
 //     FullGeodesicData<
-//       BasicGeodesicState<_Coord>,
+//       BasicGeodesicState<Coord>,
 //       GeodesicExtraBase<
-//         GeodesicExtra__ParallelTransport<BasicGeodesicState<_Coord>>,
+//         GeodesicExtra__ParallelTransport<BasicGeodesicState<Coord>>,
 //         GeodesicExtra__MinR,
 //         GeodesicExtra__Steps,
 //         GeodesicExtra__DeadReason
 //       >
 //     >;
 
-template <typename _Coord>
+template <typename Coord>
 struct _BasicGeodesicState
-    : BasicGeodesicState<_Coord, Geodesic__ParallelTransport<_Coord>> {
-  typedef BasicGeodesicState<_Coord, Geodesic__ParallelTransport<_Coord>> _Base;
+    : BasicGeodesicState<Coord, Geodesic__ParallelTransport<Coord>> {
+  typedef BasicGeodesicState<Coord, Geodesic__ParallelTransport<Coord>> _Base;
 
   using _Base::_Base;
 
@@ -342,10 +342,10 @@ struct _BasicGeodesicState
   _BasicGeodesicState integration_step(const Spacetime &spacetime,
                                        const Field &/* field */) const {
     _BasicGeodesicState result;
-    typedef typename _BasicGeodesicState::coord_type::value_type _T;
+    typedef typename _BasicGeodesicState::coord_type::value_type T;
     auto christoffel_ull = spacetime.get_christoffel_ull(this->position);
     for (int k = 0; k < 4; ++k) {
-      _T tmp = _T();
+      T tmp = T();
       for (int i = 0; i < 4; ++i)
         for (int j = 0; j < 4; ++j)
           tmp += this->direction[i]
@@ -355,16 +355,16 @@ struct _BasicGeodesicState
     }
     result.position = this->direction;
     mult(&result.position, -1);
-    result.Geodesic__ParallelTransport<_Coord>::__integration_step__impl(
+    result.Geodesic__ParallelTransport<Coord>::__integration_step__impl(
         christoffel_ull, *this);
     return result;
   }
 };
 
 #if MAGNETIC_FIELD
-template <typename _Coord> using __FullGeodesicData =
+template <typename Coord> using __FullGeodesicData =
     FullGeodesicData<
-      BasicGeodesicState<_Coord>,
+      BasicGeodesicState<Coord>,
       GeodesicExtraBase<
         GeodesicExtra__MinR,
         GeodesicExtra__Steps,
@@ -374,9 +374,9 @@ template <typename _Coord> using __FullGeodesicData =
     >;
 #elif DISK_POLARIZATION
 // TODO #if DISK_POLARIZATION
-template <typename _Coord> using ___FullGeodesicData =
+template <typename Coord> using ___FullGeodesicData =
     FullGeodesicData<
-      _BasicGeodesicState<_Coord>,
+      _BasicGeodesicState<Coord>,
       GeodesicExtraBase<
         GeodesicExtra__MinR,
         GeodesicExtra__Steps,
@@ -386,11 +386,11 @@ template <typename _Coord> using ___FullGeodesicData =
       >
     >;
 
-template <typename _Coord>
-struct __FullGeodesicData : ___FullGeodesicData<_Coord> {
-  using ___FullGeodesicData<_Coord>::___FullGeodesicData;
+template <typename Coord>
+struct __FullGeodesicData : ___FullGeodesicData<Coord> {
+  using ___FullGeodesicData<Coord>::___FullGeodesicData;
   typedef FullGeodesicData<
-      BasicGeodesicState<_Coord>,
+      BasicGeodesicState<Coord>,
       GeodesicExtraBase<
         GeodesicExtra__MinR,
         GeodesicExtra__Steps,
@@ -405,9 +405,9 @@ struct __FullGeodesicData : ___FullGeodesicData<_Coord> {
   }
 };
 #else
-template <typename _Coord> using __FullGeodesicData =
+template <typename Coord> using __FullGeodesicData =
     FullGeodesicData<
-      BasicGeodesicState<_Coord>,
+      BasicGeodesicState<Coord>,
       GeodesicExtraBase<
         GeodesicExtra__MinR,
         GeodesicExtra__Steps,
@@ -472,8 +472,8 @@ int main(int argc, char **argv) {
       //                  S.field[1] * M_PI / 180,
       //                  S.field[2] * M_PI / 180);
       Null field;
-      // typedef CartesianVector4<real_t> _Coord;
-      typedef SphericalVector4<real_t> _Coord;
+      // typedef CartesianVector4<real_t> Coord;
+      typedef SphericalVector4<real_t> Coord;
       // ok = generate_main<__FullGeodesicData<CartesianVector4<real_t>>>(
       //     S, FlatSpacetime(), field);
       // ok = generate_main<SphericalVector4<real_t>>(S, FlatSpacetime());
@@ -482,7 +482,7 @@ int main(int argc, char **argv) {
 #if PREDEFINED_PARAMS
 #if 1
     // case SPACETIME_KERR:
-    typedef BoyerLindquistVector4<real_t> _Coord;
+    typedef BoyerLindquistVector4<real_t> Coord;
     KerrSpacetime spacetime;
     Null field;
     if (debug) {
@@ -499,8 +499,8 @@ int main(int argc, char **argv) {
       // FlatSpacetime spacetime;
       SchwarzschildDipole field(spacetime, S.field[0] * UNIT_T);
       // Null field;
-      typedef SphericalVector4<real_t> _Coord;
-      // _Coord tmp = _Coord{0., NEUTRON_STAR_r, M_PI / 2, 0.};
+      typedef SphericalVector4<real_t> Coord;
+      // Coord tmp = Coord{0., NEUTRON_STAR_r, M_PI / 2, 0.};
       // std::cerr << "F_ll [Tm otprilike]\n" << (1 / UNIT_T / UNIT_m) * field.get_F_ll(tmp);
       // std::cerr << "F=" << field._calc_F(tmp) / sqr(UNIT_T) << " T^2\n";
       // debug = 3;
@@ -571,7 +571,7 @@ int main(int argc, char **argv) {
     for (int i = (-S.height); i < N; ++i) {
       double x = (double)i / (N - 1);
       double y = 0;
-      __FullGeodesicData<_Coord> result;
+      __FullGeodesicData<Coord> result;
       integrate_single_geodesic(
           spacetime,
           field,
@@ -601,7 +601,7 @@ int main(int argc, char **argv) {
     }
     return 0;
   } else {
-    ok = generate_main<__FullGeodesicData<_Coord>>(S, spacetime, field);
+    ok = generate_main<__FullGeodesicData<Coord>>(S, spacetime, field);
   }
 
   std::chrono::duration<double> time_delta =

@@ -10,10 +10,10 @@
 #define LOCATION_FACTOR   (1 << 16)
 
 
-template <typename _FullGeodesicData>
+template <typename FullGeodesicData>
 struct ScreenGeodesic {
-  _FullGeodesicData full;
-  // FullGeodesicData<BasicGeodesicState<_Coord>, GeodesicExtra<_Coord>> full;
+  FullGeodesicData full;
+  // FullGeodesicData<BasicGeodesicState<Coord>, GeodesicExtra<Coord>> full;
   int x, y;  // Screen location multiplied with LOCATION_FACTOR.
 };
 
@@ -35,11 +35,11 @@ struct QuadtreeLeaf {
   }
 };
 
-template <typename _FullGeodesicData>
-class SnapshotRecursive : public Snapshot<_FullGeodesicData> {
+template <typename FullGeodesicData>
+class SnapshotRecursive : public Snapshot<FullGeodesicData> {
  public:
   SnapshotRecursive(int width, int height)
-      : Snapshot<_FullGeodesicData>(width, height) {}
+      : Snapshot<FullGeodesicData>(width, height) {}
   virtual bool load(FILE *f) {
     unsigned int n;
     if (fread(&n, sizeof(unsigned int), 1, f) != 1)
@@ -69,24 +69,24 @@ class SnapshotRecursive : public Snapshot<_FullGeodesicData> {
     return true;
   }
 
-  std::vector<ScreenGeodesic<_FullGeodesicData>> geodesics;
+  std::vector<ScreenGeodesic<FullGeodesicData>> geodesics;
   std::vector<QuadtreeLeaf> leafs;
 };
 
-template <typename _FullGeodesicData>
+template <typename FullGeodesicData>
 using task_stack_t = std::stack<std::pair<
-    typename std::vector<ScreenGeodesic<_FullGeodesicData>>::iterator,
-    typename std::vector<ScreenGeodesic<_FullGeodesicData>>::iterator>>;
+    typename std::vector<ScreenGeodesic<FullGeodesicData>>::iterator,
+    typename std::vector<ScreenGeodesic<FullGeodesicData>>::iterator>>;
 
-template <typename _FullGeodesicData,
-          typename _Spacetime,
-          typename _Field,
+template <typename FullGeodesicData,
+          typename Spacetime,
+          typename Field,
           typename DLambdaFunc>
 void _integrate_geodesics_worker_thread(
-    task_stack_t<_FullGeodesicData> &tasks,
+    task_stack_t<FullGeodesicData> &tasks,
     std::mutex &tasks_mutex,
-    const _Spacetime &spacetime,
-    const _Field &field,
+    const Spacetime &spacetime,
+    const Field &field,
     const Camera *raytracer_camera,
     const DLambdaFunc &dlambda_func,
     int width,
@@ -98,7 +98,7 @@ void _integrate_geodesics_worker_thread(
       tasks_mutex.unlock();
       break;
     }
-    typename std::vector<ScreenGeodesic<_FullGeodesicData>>::iterator begin, end;
+    typename std::vector<ScreenGeodesic<FullGeodesicData>>::iterator begin, end;
     std::tie(begin, end) = tasks.top();
     tasks.pop();
     tasks_mutex.unlock();
@@ -113,8 +113,8 @@ void _integrate_geodesics_worker_thread(
           (double)begin->y / LOCATION_FACTOR / height,
           &begin->full);
       if (dead_reason == DEAD_FLAT) {
-        typedef decltype(begin->full.basic.position) _Coord;
-        typedef typename _Coord::value_type value_type;
+        typedef decltype(begin->full.basic.position) Coord;
+        typedef typename Coord::value_type value_type;
         CartesianVector4<value_type> position, direction;
         convert_point_and_diff(
             spacetime.coord_system_parameters(begin->full.basic.position),
@@ -134,20 +134,20 @@ void _integrate_geodesics_worker_thread(
 }
 
 
-template <typename _FullGeodesicData, typename _Spacetime, typename _Field,
-         typename _dlambdaFunc>
+template <typename FullGeodesicData, typename Spacetime, typename Field,
+         typename DLambdaFunc>
 class ImageRecursiveGenerator {
-  typedef typename _FullGeodesicData::basic_type _BasicGeodesicState;
-  typedef typename _FullGeodesicData::extra_type _GeodesicExtra;
-  typedef ScreenGeodesic<_FullGeodesicData> _ScreenGeodesic;
+  typedef typename FullGeodesicData::basic_type _BasicGeodesicState;
+  typedef typename FullGeodesicData::extra_type _GeodesicExtra;
+  typedef ScreenGeodesic<FullGeodesicData> _ScreenGeodesic;
 
-  const _Spacetime &spacetime;
-  const _Field &field;
+  const Spacetime &spacetime;
+  const Field &field;
   const Camera *raytracer_camera;
-  const _dlambdaFunc &dlambda_func;
+  const DLambdaFunc &dlambda_func;
   const int width;
   const int height;
-  SnapshotRecursive<_FullGeodesicData> * const output_snapshot;
+  SnapshotRecursive<FullGeodesicData> * const output_snapshot;
   const int thread_count;
   const int max_extra_depth;
 
@@ -165,13 +165,13 @@ class ImageRecursiveGenerator {
 
  public:
   ImageRecursiveGenerator(
-      const _Spacetime &spacetime,
-      const _Field &field,
+      const Spacetime &spacetime,
+      const Field &field,
       const Camera *raytracer_camera,
-      const _dlambdaFunc &dlambda_func,
+      const DLambdaFunc &dlambda_func,
       int width,
       int height,
-      SnapshotRecursive<_FullGeodesicData> *output_snapshot,
+      SnapshotRecursive<FullGeodesicData> *output_snapshot,
       int thread_count,
       int max_extra_depth) : spacetime(spacetime), field(field),
           raytracer_camera(raytracer_camera),
@@ -260,7 +260,7 @@ class ImageRecursiveGenerator {
 
   inline int _add_geodesic_to_queue(int x, int y) {
     geodesics.push_back(_ScreenGeodesic{
-        _FullGeodesicData(),
+        FullGeodesicData(),
         x, y
       });
     geodesics_map.emplace(std::make_pair(x, y), (int)geodesics.size() - 1);
@@ -270,7 +270,7 @@ class ImageRecursiveGenerator {
   void _integrate_geodesics(void) {
     std::vector<std::thread> threads;
 
-    task_stack_t<_FullGeodesicData> tasks;
+    task_stack_t<FullGeodesicData> tasks;
     std::mutex tasks_mutex;
 
     constexpr int SPLIT = 10;
@@ -287,7 +287,7 @@ class ImageRecursiveGenerator {
     for (int i = 0; i < thread_count; ++i) {
       threads.emplace_back(
           _integrate_geodesics_worker_thread<
-              _FullGeodesicData, _Spacetime, _Field, _dlambdaFunc>,
+              FullGeodesicData, Spacetime, Field, DLambdaFunc>,
           std::ref(tasks),
           std::ref(tasks_mutex),
           std::ref(spacetime),
@@ -430,19 +430,19 @@ class ImageRecursiveGenerator {
 
 };
 
-template <typename _FullGeodesicData, typename _Spacetime, typename _Field,
-          typename _dlambdaFunc>
+template <typename FullGeodesicData, typename Spacetime, typename Field,
+          typename DLambdaFunc>
 inline void generate_image_recursive(
-    const _Spacetime &spacetime,
-    const _Field &field,
+    const Spacetime &spacetime,
+    const Field &field,
     const Camera *raytracer_camera,
-    const _dlambdaFunc &dlambda_func,
+    const DLambdaFunc &dlambda_func,
     int width,
     int height,
-    SnapshotRecursive<_FullGeodesicData> *output_snapshot,
+    SnapshotRecursive<FullGeodesicData> *output_snapshot,
     int thread_count,
     int max_extra_depth) {
-  ImageRecursiveGenerator<_FullGeodesicData, _Spacetime, _Field,_dlambdaFunc>
+  ImageRecursiveGenerator<FullGeodesicData, Spacetime, Field,DLambdaFunc>
       generator(
         spacetime, field, raytracer_camera, dlambda_func,
         width, height, output_snapshot, thread_count, max_extra_depth);
@@ -450,10 +450,10 @@ inline void generate_image_recursive(
 }
 
 
-template <typename _Spacetime, typename _FullGeodesicData, typename DiskTex>
+template <typename Spacetime, typename FullGeodesicData, typename DiskTex>
 void colorize_from_recursive_snapshot(
-    const SnapshotRecursive<_FullGeodesicData> &snapshot,
-    const _Spacetime &spacetime,
+    const SnapshotRecursive<FullGeodesicData> &snapshot,
+    const Spacetime &spacetime,
 #if SKY_ENABLED
     const Image &/* sky */,
 #endif

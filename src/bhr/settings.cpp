@@ -99,9 +99,9 @@ static void _read_value(std::string &value, const char *input) {
   value = input;
 }
 
-template<typename _T> static int _read(
+template<typename T> static int _read(
     int argc, char **argv, int &i,
-    const std::string &cur, const std::string &name, _T &value) {
+    const std::string &cur, const std::string &name, T &value) {
   if (cur == "--" + name) {
     if (i == argc - 1) {
       fprintf(stderr, "Missing value for %s\n", cur.c_str());

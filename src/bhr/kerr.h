@@ -29,8 +29,8 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
 
   // function template partial specialization not allowed, therefore using
   // dummy argument
-  template <typename _T> KerrSpacetimeCoordParams coord_system_parameters(
-      const BoyerLindquistVector4<_T> & /* dummy */) const {
+  template <typename T> KerrSpacetimeCoordParams coord_system_parameters(
+      const BoyerLindquistVector4<T> & /* dummy */) const {
 #if PREDEFINED_PARAMS
     return KerrSpacetimeCoordParams();
 #else
@@ -39,9 +39,9 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
   }
 
 
-  template <typename _T>
-  inline Matrix4<_T> keplerian_tetrad_to_coord(
-      const BoyerLindquistVector4<_T> &position) const {
+  template <typename T>
+  inline Matrix4<T> keplerian_tetrad_to_coord(
+      const BoyerLindquistVector4<T> &position) const {
     PARAMS_CONSTEXPR auto aa = sqr(a);
     PARAMS_CONSTEXPR auto rs = (2 * PHY_G / sqr(PHY_c)) * M;
     PARAMS_CMATH_CONSTEXPR auto sqrtM = std::sqrt(M);
@@ -64,7 +64,7 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     const auto lambda = -(g_03 + g_33 * Omega_K) / (g_00 + g_03 * Omega_K);
     const auto tau = inv_sqrt((g_00 * lambda + 2 * g_03) * lambda + g_33);
 
-    return Matrix4<_T>{{
+    return Matrix4<T>{{
         {gamma, 0, 0, tau * lambda},
         {0, std::sqrt(Delta / rho2), 0, 0},
         {0, 0, -inv_sqrt(rho2), 0},
@@ -73,9 +73,9 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
   }
 
 
-  template <typename _T>
-  inline Matrix4<_T> ZAMO_coord_to_tetrad(
-      const BoyerLindquistVector4<_T> &position) const {
+  template <typename T>
+  inline Matrix4<T> ZAMO_coord_to_tetrad(
+      const BoyerLindquistVector4<T> &position) const {
     PARAMS_CONSTEXPR auto aa = sqr(a);
     PARAMS_CONSTEXPR auto rs = (2 * PHY_G / sqr(PHY_c)) * M;
 
@@ -89,7 +89,7 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     const auto omega = rs * a * r / Sigma2;
 
     const auto tmp = std::sqrt(Sigma2 / rho2) * sin_theta;
-    return Matrix4<_T>{{
+    return Matrix4<T>{{
         {alpha, 0, 0, 0},
         {0, std::sqrt(rho2 / Delta), 0, 0},
         {0, 0, std::sqrt(rho2), 0},
@@ -97,10 +97,10 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     }};
   }
 
-  template <typename _T>
-  inline BoyerLindquistVector4<_T> geodesic_acceleration(
-      const BoyerLindquistVector4<_T> &position,
-      const BoyerLindquistVector4<_T> &direction) const {
+  template <typename T>
+  inline BoyerLindquistVector4<T> geodesic_acceleration(
+      const BoyerLindquistVector4<T> &position,
+      const BoyerLindquistVector4<T> &direction) const {
     PARAMS_CONSTEXPR auto aa = sqr(a);
 
     // CONSTANTS MISSING.
@@ -119,13 +119,13 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     const auto one_over_Sigma2 = sqr(one_over_Sigma);
     const auto Delta = rr - 2 * M * r + aa;
     const auto one_over_Delta = 1 / Delta;
-    const auto T = 2 * M * aa * r * sin2_theta;
+    const auto tt = 2 * M * aa * r * sin2_theta;
 
-    BoyerLindquistVector4<_T> result;
+    BoyerLindquistVector4<T> result;
     result.t = (
         2 * direction.t * direction.r * M * (rr + aa) * sigma * one_over_Delta
         - 2 * direction.t * direction.theta * 2 * M * aa * r * sin_cos_theta
-        + 2 * direction.theta * direction.phi * T * a * sin_cos_theta
+        + 2 * direction.theta * direction.phi * tt * a * sin_cos_theta
         + 2 * direction.r * direction.phi * M * a * sin2_theta * (aa * cos2_theta * (aa - rr) - rr * (aa + 3 * rr)) * one_over_Delta
       ) * one_over_Sigma2;
 
@@ -144,13 +144,13 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
           + 2 * direction.t * direction.phi * 2 * M * a * r * (rr + aa) * one_over_Sigma2
           + sqr(direction.r) * aa * one_over_Delta
           - sqr(direction.theta) * aa
-          - sqr(direction.phi) * (rr + aa + T * (one_over_Sigma + (rr + aa) * one_over_Sigma2))
+          - sqr(direction.phi) * (rr + aa + tt * (one_over_Sigma + (rr + aa) * one_over_Sigma2))
         )
         + 2 * direction.r * direction.theta * r
       ) * one_over_Sigma;
 
     result.phi =
-      2 * direction.theta * direction.phi * cot_theta * (1 + T * one_over_Sigma2)
+      2 * direction.theta * direction.phi * cot_theta * (1 + tt * one_over_Sigma2)
       + 2 * direction.t * direction.r * M * a * sigma * one_over_Sigma2 * one_over_Delta
       - 2 * direction.t * direction.theta * 2 * M * a * r * cot_theta * one_over_Sigma2
       + 2 * direction.r * direction.phi * (
@@ -163,9 +163,9 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     return result;
   }
 
-  template <typename _T>
-  inline Matrix4<_T> get_metric_ll(
-      const BoyerLindquistVector4<_T> &position) const {
+  template <typename T>
+  inline Matrix4<T> get_metric_ll(
+      const BoyerLindquistVector4<T> &position) const {
     PARAMS_CONSTEXPR auto aa = sqr(a);
 
     const auto rr = sqr(position.r);
@@ -175,14 +175,14 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     const auto tmp = 2 * M * position.r / rho2;
     const auto ttmp = tmp * sin_theta2;
 
-    // Matrix4<_T> metric = Matrix4<_T>();
+    // Matrix4<T> metric = Matrix4<T>();
     // metric[0][0] = tmp - 1;
     // metric[1][1] = rho2 / Delta;
     // metric[2][2] = rho2;
     // metric[3][3] = (rr + aa + aa * ttmp) * sin_theta2;
     // metric[0][3] = metric[3][0] = -a * ttmp;
     // return metric;
-    return Matrix4<_T>{{
+    return Matrix4<T>{{
         {tmp - 1, 0, 0, -a * ttmp},
         {0, rho2 / Delta, 0, 0},
         {0, 0, rho2, 0},
@@ -190,9 +190,9 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     }};
   }
 
-  template <typename _T>
-  inline Matrix4<_T> get_metric_uu(
-      const BoyerLindquistVector4<_T> &position) const {
+  template <typename T>
+  inline Matrix4<T> get_metric_uu(
+      const BoyerLindquistVector4<T> &position) const {
     PARAMS_CONSTEXPR auto aa = sqr(a);
     PARAMS_CONSTEXPR auto rs = (2 * PHY_G / sqr(PHY_c)) * M;
 
@@ -204,7 +204,7 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
 
     // const auto tmp = 2 * M * position.r / rho2;
     // const auto ttmp = tmp * sin_theta2;
-    // Matrix4<_T> metric = Matrix4<_T>();
+    // Matrix4<T> metric = Matrix4<T>();
     // metric[0][0] = tmp - 1;
     // metric[1][1] = Delta / rho2;
     // metric[2][2] = inverse(rho2);
@@ -213,7 +213,7 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     // return metric;
 
     const auto g03 = -rs * a * position.r / (PHY_c * rho2 * Delta);
-    return Matrix4<_T>{{
+    return Matrix4<T>{{
       {-A / (sqr(PHY_c) * rho2 * Delta), 0, 0, g03},
       {0, Delta / rho2, 0, 0},
       {0, 0, inverse(rho2), 0},
@@ -222,9 +222,9 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     }};
   }
 
-  template <typename _T>
-  inline Christoffel<_T> get_christoffel_ull(
-      const BoyerLindquistVector4<_T> &position) const {
+  template <typename T>
+  inline Christoffel<T> get_christoffel_ull(
+      const BoyerLindquistVector4<T> &position) const {
     PARAMS_CONSTEXPR auto aa = sqr(a);
     PARAMS_CONSTEXPR auto rs = (2 * PHY_G / sqr(PHY_c)) * M;
 
@@ -267,7 +267,7 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
     const auto rpp = Delta * sin2_theta * (-r + .5 * rs * aa * sin2_theta * sigma * one_over_Sigma2) * one_over_Sigma;
     const auto hpp = -sin_cos_theta * (sqr(rr + aa) - aa * Delta * sin2_theta + (rr + aa) * rs * aa * r * sin2_theta * one_over_Sigma) * one_over_Sigma2;
 
-    return Christoffel<_T>{{
+    return Christoffel<T>{{
       {
         {0, ttr, tth, 0},
         {ttr, 0, 0, trp},

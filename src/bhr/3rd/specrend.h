@@ -31,8 +31,8 @@ bool constrain_rgb(RGBd *rgb);
 
 // Source: http://www.fourmilab.ch/documents/specrend/specrend.c
 // Modified to use a functor instead of a function pointer.
-template <typename _Func>
-XYZd spectrum_to_xyz(const _Func &spec_intens) {
+template <typename Func>
+XYZd spectrum_to_xyz(const Func &spec_intens) {
   /* CIE colour matching functions xBar, yBar, and zBar for
      wavelengths from 380 through 780 nanometers, every 5
      nanometers.  For a wavelength lambda in this range:

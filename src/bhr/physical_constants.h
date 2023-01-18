@@ -13,12 +13,12 @@
 
 
 /* Mass, Length, Time, Charge */
-template <int _A, int _B, int _C, int _D>
+template <int A, int B, int C, int D>
 struct Quantity {
   const double value;
 
   constexpr explicit Quantity(double _value) : value(_value) {
-    // static_assert(_A == 0 && _B == 0 && _C == 0 && _D == 0);
+    // static_assert(A == 0 && B == 0 && C == 0 && D == 0);
   }
 
   friend inline constexpr Quantity operator+(Quantity x, Quantity y) {
@@ -38,7 +38,7 @@ struct Quantity {
     return Quantity(x.value / y);
   }
   friend inline constexpr auto operator/(double x, Quantity y) {
-    return Quantity<-_A, -_B, -_C, -_D>(x / y.value);
+    return Quantity<-A, -B, -C, -D>(x / y.value);
   }
 
   explicit inline constexpr operator double(void) const {
@@ -46,33 +46,33 @@ struct Quantity {
   }
 };
 
-template <int _A, int _B, int _C, int _D>
-inline constexpr auto sqrt(Quantity<_A, _B, _C, _D> x) {
+template <int A, int B, int C, int D>
+inline constexpr auto sqrt(Quantity<A, B, C, D> x) {
   using std::sqrt;
-  static_assert(_A % 2 == 0 && _B % 2 == 0 && _C % 2 == 0 && _D % 2 == 0);
-  return Quantity<_A / 2, _B / 2, _C / 2, _D / 2>(sqrt(x.value));
+  static_assert(A % 2 == 0 && B % 2 == 0 && C % 2 == 0 && D % 2 == 0);
+  return Quantity<A / 2, B / 2, C / 2, D / 2>(sqrt(x.value));
 }
 
-template <int _A, int _B, int _C, int _D>
-inline constexpr auto constexpr_sqrt(Quantity<_A, _B, _C, _D> x) {
-  static_assert(_A % 2 == 0 && _B % 2 == 0 && _C % 2 == 0 && _D % 2 == 0);
-  return Quantity<_A / 2, _B / 2, _C / 2, _D / 2>(constexpr_sqrt(x.value));
+template <int A, int B, int C, int D>
+inline constexpr auto constexpr_sqrt(Quantity<A, B, C, D> x) {
+  static_assert(A % 2 == 0 && B % 2 == 0 && C % 2 == 0 && D % 2 == 0);
+  return Quantity<A / 2, B / 2, C / 2, D / 2>(constexpr_sqrt(x.value));
 }
 
 
-template <int _A1, int _B1, int _C1, int _D1,
-          int _A2, int _B2, int _C2, int _D2>
+template <int A1, int B1, int C1, int D1,
+          int A2, int B2, int C2, int D2>
 inline constexpr auto operator*(
-    Quantity<_A1, _B1, _C1, _D1> x, Quantity<_A2, _B2, _C2, _D2> y) {
-  return Quantity<_A1 + _A2, _B1 + _B2, _C1 + _C2, _D1 + _D2>(
+    Quantity<A1, B1, C1, D1> x, Quantity<A2, B2, C2, D2> y) {
+  return Quantity<A1 + A2, B1 + B2, C1 + C2, D1 + D2>(
       x.value * y.value);
 }
 
-template <int _A1, int _B1, int _C1, int _D1,
-          int _A2, int _B2, int _C2, int _D2>
+template <int A1, int B1, int C1, int D1,
+          int A2, int B2, int C2, int D2>
 inline constexpr auto operator/(
-    Quantity<_A1, _B1, _C1, _D1> x, Quantity<_A2, _B2, _C2, _D2> y) {
-  return Quantity<_A1 - _A2, _B1 - _B2, _C1 - _C2, _D1 - _D2>(
+    Quantity<A1, B1, C1, D1> x, Quantity<A2, B2, C2, D2> y) {
+  return Quantity<A1 - A2, B1 - B2, C1 - C2, D1 - D2>(
       x.value / y.value);
 }
 

@@ -3,15 +3,15 @@
 #include <bhr/kerr.h>
 #include <bhr/autodiff.h>
 
-template <typename _T, typename _Coord>
+template <typename T, typename Coord>
 void _get_kerr_autodiff_christoffel(
     const KerrSpacetime &kerr,
-    const _Coord &position,
-    Christoffel<_T> &output) {
+    const Coord &position,
+    Christoffel<T> &output) {
 
-  Matrix4<_T> invmetric;
-  Matrix4<first_partial_derivatives<_T, 4> > metric_ad;
-  BoyerLindquistVector4<first_partial_derivatives<_T, 4>> position_ad;
+  Matrix4<T> invmetric;
+  Matrix4<first_partial_derivatives<T, 4> > metric_ad;
+  BoyerLindquistVector4<first_partial_derivatives<T, 4>> position_ad;
   for (int i = 0; i < 4; ++i) {
     position_ad[i].value() = position[i];
     for (int j = 0; j < 4; ++j)
@@ -19,7 +19,7 @@ void _get_kerr_autodiff_christoffel(
   }
   metric_ad = kerr.get_metric_ll(position_ad);
 
-  Matrix4<_T> metric;
+  Matrix4<T> metric;
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       metric[i][j] = metric_ad[i][j].value();

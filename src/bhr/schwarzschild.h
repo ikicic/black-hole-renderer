@@ -11,7 +11,7 @@ class SchwarzschildSpacetime : public BlackHoleBase<SchwarzschildSpacetime> {
 #else
   double M;
 
-  SchwarzschildSpacetime(double _M) : M(_M) {}
+  SchwarzschildSpacetime(double M_) : M(M_) {}
 #endif
 
   PARAMS_FUNC_STATIC_CONSTEXPR
@@ -22,32 +22,32 @@ class SchwarzschildSpacetime : public BlackHoleBase<SchwarzschildSpacetime> {
 
   // function template partial specialization not allowed, therefore using
   // dummy argument
-  template <typename _T>
-  Null coord_system_parameters(const _T &/* dummy */) const {
+  template <typename T>
+  Null coord_system_parameters(const T &/* dummy */) const {
     return Null();
   }
 
-  template <typename _T>
-  inline SphericalVector4<_T> geodesic_acceleration(
-      const SphericalVector4<_T> &position,
-      const SphericalVector4<_T> &direction) const {
+  template <typename T>
+  inline SphericalVector4<T> geodesic_acceleration(
+      const SphericalVector4<T> &position,
+      const SphericalVector4<T> &direction) const {
 #if PREDEFINED_PARAMS
     constexpr auto M = BLACK_HOLE_M;
 #endif
     const auto r_rs = position.r - (2 * PHY_G / sqr(PHY_c)) * M;
     const auto one_over_r = 1 / position.r;
-    const auto T = 1 / (position.r * r_rs);
+    const auto tt = 1 / (position.r * r_rs);
 
     const auto sin_theta = sin(position.theta);
     const auto cos_theta = cos(position.theta);
     const auto cot_theta = cos_theta / sin_theta;
 
-    SphericalVector4<_T> result;
+    SphericalVector4<T> result;
     result.t =
-      2 * direction.t * direction.r * M * T;
+      2 * direction.t * direction.r * M * tt;
     result.r =
       sqr(direction.t) * M * r_rs * cube(one_over_r)
-      - sqr(direction.r) * M * T
+      - sqr(direction.r) * M * tt
       - sqr(direction.theta) * r_rs
       - sqr(direction.phi) * r_rs * sqr(sin_theta);
     result.theta =
@@ -59,9 +59,9 @@ class SchwarzschildSpacetime : public BlackHoleBase<SchwarzschildSpacetime> {
     return result;
   }
 
-  template <typename _T>
-  Matrix4<_T> get_metric_ll(const SphericalVector4<_T> &position) const {
-    Matrix4<_T> result = Matrix4<_T>();
+  template <typename T>
+  Matrix4<T> get_metric_ll(const SphericalVector4<T> &position) const {
+    Matrix4<T> result = Matrix4<T>();
 
     const auto rr = sqr(position.r);
     const auto g_tt = 1 - black_hole_radius() / position.r;
@@ -74,9 +74,9 @@ class SchwarzschildSpacetime : public BlackHoleBase<SchwarzschildSpacetime> {
     return result;
   }
 
-  template <typename _T>
-  Matrix4<_T> get_metric_uu(const SphericalVector4<_T> &position) const {
-    Matrix4<_T> result = Matrix4<_T>();
+  template <typename T>
+  Matrix4<T> get_metric_uu(const SphericalVector4<T> &position) const {
+    Matrix4<T> result = Matrix4<T>();
 
     const auto one_over_rr = 1 / sqr(position.r);
     const auto g_tt = 1 - black_hole_radius() / position.r;
@@ -89,9 +89,9 @@ class SchwarzschildSpacetime : public BlackHoleBase<SchwarzschildSpacetime> {
     return result;
   }
 
-  template <typename _T>
-  inline SphericalVector4<_T> get_potential_l(
-      const SphericalVector4<_T> &position_u) const {
+  template <typename T>
+  inline SphericalVector4<T> get_potential_l(
+      const SphericalVector4<T> &position_u) const {
     (void)position_u;
     return {0, 0, 0, 0};
   }
@@ -112,29 +112,29 @@ class SchwarzschildDipole {
     _debug_info();
   }
 
-  template <typename _T>
-  inline std::pair<_T, _T> _f(const _T &r) const {
+  template <typename T>
+  inline std::pair<T, T> _f(const T &r) const {
     using std::log;
-    const _T x = r / rs;
-    const _T y = rs / r;
-    const _T tmplog = log(1 - y);
+    const T x = r / rs;
+    const T y = rs / r;
+    const T tmplog = log(1 - y);
     return std::make_pair(
         3 * cube(x) * (tmplog + y * (1 + .5 * y)),
         1.5 / rs * (((6 * x - 3) * x - 1) / (x - 1) + 6 * sqr(x) * tmplog)
     );
   }
 
-  template <typename _T>
-  inline Matrix4<_T> get_F_ll(const SphericalVector4<_T> &position_u) const {
+  template <typename T>
+  inline Matrix4<T> get_F_ll(const SphericalVector4<T> &position_u) const {
     using std::sin;
     using std::log;
 
-    const _T x = std::max(position_u.r, (_T)NEUTRON_STAR_r) / rs;
-    const _T tmplog = log(1 - inverse(x));
+    const T x = std::max(position_u.r, (T)NEUTRON_STAR_r) / rs;
+    const T tmplog = log(1 - inverse(x));
 
-    const _T Frp = -3 * mu / sqr(rs) * sqr(sin(position_u.theta)) * (
+    const T Frp = -3 * mu / sqr(rs) * sqr(sin(position_u.theta)) * (
         (2 * x - 1) / (x - 1) + 2 * x * tmplog);
-    const _T Ftp = -1.5 * mu / rs * sin(2 * position_u.theta) * (
+    const T Ftp = -1.5 * mu / rs * sin(2 * position_u.theta) * (
         1 + 2 * x * (1 + x * tmplog));
 
     if (debug >= 3) {
@@ -145,7 +145,7 @@ class SchwarzschildDipole {
                 << "Ftp=" << Ftp / UNIT_T / sqr(UNIT_m) << " Tm^2\n";
     }
 
-    return Matrix4<_T>{{
+    return Matrix4<T>{{
         {0, 0, 0, 0},
         {0, 0, 0, Frp},
         {0, 0, 0, Ftp},

@@ -54,14 +54,14 @@ class ReissnerNordstromSpacetime
 
   // Function template partial specialization not allowed, therefore using
   // dummy argument.
-  template <typename _T>
-  Null coord_system_parameters(const _T &/* dummy */) const {
+  template <typename T>
+  Null coord_system_parameters(const T &/* dummy */) const {
     return Null();
   }
 
-  template <typename _T>
-  Matrix4<_T> get_metric_ll(const SphericalVector4<_T> &position) const {
-    Matrix4<_T> result = Matrix4<_T>();
+  template <typename T>
+  Matrix4<T> get_metric_ll(const SphericalVector4<T> &position) const {
+    Matrix4<T> result = Matrix4<T>();
 
     const auto rr = sqr(position.r);
     const auto g_tt = 1 - _schwarzschild_radius() / position.r
@@ -75,9 +75,9 @@ class ReissnerNordstromSpacetime
     return result;
   }
 
-  template <typename _T>
-  Matrix4<_T> get_metric_uu(const SphericalVector4<_T> &position) const {
-    Matrix4<_T> result = Matrix4<_T>();
+  template <typename T>
+  Matrix4<T> get_metric_uu(const SphericalVector4<T> &position) const {
+    Matrix4<T> result = Matrix4<T>();
 
     const auto one_over_rr = 1 / sqr(position.r);
     const auto g_tt = 1 - _schwarzschild_radius() / position.r
@@ -91,9 +91,9 @@ class ReissnerNordstromSpacetime
     return result;
   }
 
-  template <typename _T>
-  inline SphericalVector4<_T> get_potential_l(
-      const SphericalVector4<_T> &position_u) const {
+  template <typename T>
+  inline SphericalVector4<T> get_potential_l(
+      const SphericalVector4<T> &position_u) const {
     (void)position_u;
     // return {0, 0, 0, 0};
     return {

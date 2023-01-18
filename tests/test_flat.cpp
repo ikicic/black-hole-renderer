@@ -7,11 +7,11 @@ bool test_flat_magnetic_field(void) {
   if (result != -1)
     return result;
   /* Compare the potential A and the tensor F. */
-  typedef CartesianVector4<double> _Coord;
+  typedef CartesianVector4<double> Coord;
   FlatSpacetime spacetime;
   FlatDipole field;
   for (int test = 0; test < 100; ++test) {
-    _Coord position_u;
+    Coord position_u;
     random_vector(position_u, 0.1, 1.0);
 
     typedef first_partial_derivatives<double, 4> fpds;

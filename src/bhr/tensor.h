@@ -5,8 +5,8 @@
 #include <bhr/physical_constants.h>
 #include <bhr/qed_lagrangian.h>
 
-template <typename _T> struct Christoffel {
-  typedef _T matrix44[4][4];
+template <typename T> struct Christoffel {
+  typedef T matrix44[4][4];
   matrix44 mat[4];
 
   inline matrix44 &operator[](int y) {
@@ -54,22 +54,22 @@ inline void __print_matrix444(const double tmp[4][4][4]) {
 }
 
 template <
-    typename _T,
-    template <typename> class _Vector,
+    typename T,
+    template <typename> class Vector,
     typename MetricLLFunc,
     typename MetricUUFunc,
     typename PotentialLFunc>
-inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
+inline Vector<T> geodesic_acceleration__magnetic_field__lowest_order(
     const MetricLLFunc &metric_ll_func,
     const MetricUUFunc &metric_uu_func,
     const PotentialLFunc &potential_l_func,
-    const _Vector<_T> &position_u,
-    const _Vector<_T> &vec_u) {
+    const Vector<T> &position_u,
+    const Vector<T> &vec_u) {
 
   constexpr double XI = QED::lambda2;
 
-  typedef first_partial_derivatives<_T, 4> fpds;
-  const _Vector<fpds> ad_position_u{
+  typedef first_partial_derivatives<T, 4> fpds;
+  const Vector<fpds> ad_position_u{
     fpds(position_u[0], 1, 0, 0, 0),
     fpds(position_u[1], 0, 1, 0, 0),
     fpds(position_u[2], 0, 0, 1, 0),
@@ -77,7 +77,7 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
   };
 
   const Matrix4<fpds> metric_ll = metric_ll_func(ad_position_u);
-  Christoffel<_T> chr_lll; // Without the factor 1/2.
+  Christoffel<T> chr_lll; // Without the factor 1/2.
   for (int k = 0; k < 4; ++k)
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j) {
@@ -86,27 +86,27 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
                          - metric_ll[i][j].first(k);
       }
 
-  typedef second_partial_derivatives<_T, 4> spds;
-  const _Vector<spds> add_position_u{
+  typedef second_partial_derivatives<T, 4> spds;
+  const Vector<spds> add_position_u{
     spds(position_u[0], 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
     spds(position_u[1], 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
     spds(position_u[2], 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
     spds(position_u[3], 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
   };
-  const _Vector<spds> A_l = potential_l_func(add_position_u);
+  const Vector<spds> A_l = potential_l_func(add_position_u);
   /* Magnetic field tensor perturbation is of the form:
    * g~^ab = g^ab + xi gB^ab
    * g~_ab = g_ab - xi gB_ab
    * gB^ab = F^ac F_c^b = -g^cd F^ac F^bd
    * gB_ab = F_ac F^c_b = -g_cd F_ac F_bd
    */
-  Matrix4<_T> F_ll;
+  Matrix4<T> F_ll;
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       F_ll[i][j] = A_l[j].first(i) - A_l[i].first(j);
 
   /* F_der_lll[k][i][j] = d(F_ij) / dx^k */
-  _T F_der_lll[4][4][4];
+  T F_der_lll[4][4][4];
   for (int k = 0; k < 4; ++k)
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j) {
@@ -115,11 +115,11 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
       }
 
   /* gB_der[k][i][j] = d(g_ij) / dx^k */
-  _T gB_der_lll[4][4][4];
+  T gB_der_lll[4][4][4];
   for (int k = 0; k < 4; ++k)
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j) {
-        _T tmp = _T();
+        T tmp = T();
         for (int a = 0; a < 4; ++a)
           for (int b = 0; b < 4; ++b) {
             tmp += metric_ll[a][b].first(k) * F_ll[i][a] * F_ll[j][b];
@@ -131,7 +131,7 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
         gB_der_lll[k][i][j] = -XI * tmp;  // gB_uu has + sign.
       }
 
-  Christoffel<_T> chr2_lll;
+  Christoffel<T> chr2_lll;
   for (int k = 0; k < 4; ++k)
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j) {
@@ -147,7 +147,7 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
 
 
   /* Calculate d(vec_k) / dlambda. */
-  _Vector<_T> result_l = _Vector<_T>();
+  Vector<T> result_l = Vector<T>();
   for (int k = 0; k < 4; ++k)
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j)
@@ -155,20 +155,20 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
 
   /* Raise index with the perturbed metric. */
   /* First, raise F_ll to F_uu and F_lu. */
-  Matrix4<_T> metric_uu = metric_uu_func(position_u);
-  Matrix4<_T> F_lu;
+  Matrix4<T> metric_uu = metric_uu_func(position_u);
+  Matrix4<T> F_lu;
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j) {
-      _T tmp = _T();
+      T tmp = T();
       for (int k = 0; k < 4; ++k)
         tmp += metric_uu[j][k] * F_ll[i][k];
       F_lu[i][j] = tmp;
     }
 
-  Matrix4<_T> F_uu__minus;
+  Matrix4<T> F_uu__minus;
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j) {
-      _T tmp = _T();
+      T tmp = T();
       for (int k = 0; k < 4; ++k) {
         // tmp += metric_uu[i][k] * (-F_lu[k][j]);
         tmp += metric_uu[i][k] * F_lu[j][k];
@@ -176,10 +176,10 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
       F_uu__minus[i][j] = tmp;
     }
 
-  Matrix4<_T> gB_uu;  // Metric magnetic field perturbation.
+  Matrix4<T> gB_uu;  // Metric magnetic field perturbation.
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j) {
-      _T tmp = _T();
+      T tmp = T();
       for (int k = 0; k < 4; ++k) {
         // tmp += F_uu[i][k] * F_lu[k][j];
         tmp += F_uu__minus[i][k] * F_lu[j][k];
@@ -187,12 +187,12 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
       gB_uu[i][j] = XI * tmp;
     }
 
-  _Vector<_T> result_u;
+  Vector<T> result_u;
   for (int i = 0; i < 4; ++i) {
-    _T tmp = _T();
+    T tmp = T();
     for (int j = 0; j < 4; ++j)
       tmp += metric_uu[i][j] * result_l[j];
-    _T tmp2 = _T();
+    T tmp2 = T();
     for (int j = 0; j < 4; ++j)
       tmp2 += gB_uu[i][j] * result_l[j];
     /* Christoffel symbols didn't include factor 1/2, so we include it here. */
@@ -205,23 +205,23 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field__lowest_order(
 
 
 template <
-    typename _T,
-    template <typename> class _Vector,
+    typename T,
+    template <typename> class Vector,
     typename MetricLLFunc,
     typename MetricUUFunc,
     typename FLLFunc,
     typename LagrangianFunc>
-inline _Vector<_T> geodesic_acceleration__magnetic_field(
+inline Vector<T> geodesic_acceleration__magnetic_field(
     const MetricLLFunc &metric_ll_func,
     const MetricUUFunc &metric_uu_func,
     const FLLFunc &F_ll_func,
     const LagrangianFunc &lagrangian_func,
-    const _Vector<_T> &position_u,
-    const _Vector<_T> &vec_u) {
+    const Vector<T> &position_u,
+    const Vector<T> &vec_u) {
   using std::sqrt;
 
-  typedef first_partial_derivatives<_T, 4> fpd4;
-  const _Vector<fpd4> ad_position_u{
+  typedef first_partial_derivatives<T, 4> fpd4;
+  const Vector<fpd4> ad_position_u{
     fpd4(position_u[0], 1, 0, 0, 0),
     fpd4(position_u[1], 0, 1, 0, 0),
     fpd4(position_u[2], 0, 0, 1, 0),
@@ -266,7 +266,7 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field(
 
   if (F + G > sqr(1e4 * UNIT_T)) {
       /* Calculate lambdas and d/dF and d/dG. */
-    typedef first_partial_derivatives<_T, 2> fpd2;
+    typedef first_partial_derivatives<T, 2> fpd2;
     fpd2 lambda2[2];
 #if PREPROCESS_LAMBDAS
     using namespace QEDCache;
@@ -299,7 +299,7 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field(
     }
   }
 
-  Christoffel<_T> chr_lll; // Without the factor 1/2.
+  Christoffel<T> chr_lll; // Without the factor 1/2.
   for (int k = 0; k < 4; ++k)
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j) {
@@ -318,7 +318,7 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field(
     std::cerr << "total_metric_ll=\n" << total_metric_ll << '\n';
     std::cerr << "chr_lll=\n" << chr_lll;
   }
-  _Vector<_T> result_l = _Vector<_T>();
+  Vector<T> result_l = Vector<T>();
   for (int k = 0; k < 4; ++k)
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j)
@@ -326,7 +326,7 @@ inline _Vector<_T> geodesic_acceleration__magnetic_field(
   for (int i = 0; i < 4; ++i)
     result_l[i] *= .5;  // Factor 1/2 from the Christoffel symbols.
 
-  _Vector<_T> result_u = _Vector<_T>();
+  Vector<T> result_u = Vector<T>();
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       result_u[i] += total_metric_uu[i][j].value() * result_l[j];

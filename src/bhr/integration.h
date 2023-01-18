@@ -6,16 +6,16 @@
 
 // https://math.okstate.edu/people/yqwang/teaching/math4513_fall11/Notes/rungekutta.pdf
 // Adaptive Runge-Kutta-FehlBerg
-template <typename _Vector, typename _RHS>
+template <typename Vector, typename RHS>
 inline real_t integration_step__RGF45(
-    const _RHS &RHS, const real_t h, const _Vector &u, _Vector *out) {
+    const RHS &rhs, const real_t h, const Vector &u, Vector *out) {
 
 #define EVALUATE(v, w) { \
-      w = RHS((v)); \
+      w = rhs((v)); \
       mult(&(w), h); \
     }
 #define FRAC(a, b) (real_t(a) / b)
-  _Vector k1, k2, k3, k4, k5, k6, v;
+  Vector k1, k2, k3, k4, k5, k6, v;
 
   EVALUATE(u, k1);
   set_and_mult_add(&v, u, FRAC(1, 4), k1);
@@ -63,23 +63,23 @@ inline real_t integration_step__RGF45(
 }
 
 
-template <typename _Vector, typename _RHS>
+template <typename Vector, typename RHS>
 inline void integrate__RGF45(
-    const _RHS &RHS,
-    _Vector initial,
+    const RHS &rhs,
+    Vector initial,
     real_t t,
     const real_t min_h,
     real_t h,  // start_h
     const real_t max_h,
     const real_t epsilon,
-    _Vector * const output) {
+    Vector * const output) {
 
   constexpr real_t SAFETY = real_t(0.84);
-  _Vector out;
+  Vector out;
 
   while (t != 0.0) {
     if (h > t) h = t;
-    const real_t R = integration_step__RGF45(RHS, h, initial, &out);
+    const real_t R = integration_step__RGF45(rhs, h, initial, &out);
     if (R <= epsilon) {
       t -= h;
       initial = out;

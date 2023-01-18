@@ -67,33 +67,33 @@ extern int debug;
 
 
 
-template <typename _T>
-struct _RGB : Vector<_T, 3> {
-  _RGB() {}
-  _RGB(_T r, _T g, _T b) {
+template <typename T>
+struct RGB : Vector<T, 3> {
+  RGB() {}
+  RGB(T r, T g, T b) {
     (*this)[0] = r;
     (*this)[1] = g;
     (*this)[2] = b;
   }
-  _RGB(const Vector<_T, 3> &parent) : Vector<_T, 3>(parent) {}
+  RGB(const Vector<T, 3> &parent) : Vector<T, 3>(parent) {}
 
-  template <typename _T2>
-  explicit _RGB(const _RGB<_T2> &rgb) {
+  template <typename T2>
+  explicit RGB(const RGB<T2> &rgb) {
     (*this)[0] = rgb[0];
     (*this)[1] = rgb[1];
     (*this)[2] = rgb[2];
   }
 
-  inline _T luminance(void) const {
-    return _T(0.21) * (*this)[0]
-         + _T(0.72) * (*this)[1]
-         + _T(0.07) * (*this)[2];
+  inline T luminance(void) const {
+    return T(0.21) * (*this)[0]
+         + T(0.72) * (*this)[1]
+         + T(0.07) * (*this)[2];
   }
 };
 
 typedef Vector<colreal_t, 3> XYZd;
-typedef _RGB<colreal_t> RGBd;
-typedef _RGB<float> RGBf;
+typedef RGB<colreal_t> RGBd;
+typedef RGB<float> RGBf;
 
 // utility.h
 inline double numerical_sqr_distance(const RGBd &A, const RGBd &B) {
@@ -125,12 +125,12 @@ struct RGBA {
 };
 
 
-template <typename _T1, typename _T2, typename _T3>
-inline bool is_between(const _T1 &x, const _T2 &low, const _T3 &high) {
+template <typename T1, typename T2, typename T3>
+inline bool is_between(const T1 &x, const T2 &low, const T3 &high) {
   return low <= x && x <= high;
 }
-template <typename _T>
-inline int int_sgn(const _T &x) {
+template <typename T>
+inline int int_sgn(const T &x) {
   return x > 0 ? 1 : (x < 0 ? -1 : 0);
 }
 inline double random_double(double low, double high) {
@@ -139,7 +139,7 @@ inline double random_double(double low, double high) {
 
 struct Image;
 
-template <typename _FullGeodesicData>
+template <typename FullGeodesicData>
 class Snapshot {
  public:
   Snapshot(int _width, int _height) : width(_width), height(_height) {}

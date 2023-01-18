@@ -16,8 +16,8 @@ static CMATH_CONSTEXPR QUANTITY(0, 1, 0, 0) _BLACK_HOLE_radius =
 
 static constexpr QUANTITY(0, 1, 0, 0) MAX_r = _BLACK_HOLE_r_S * 10000;
 
-template <typename _T>
-CMATH_CONSTEXPR auto kerr_direct_ISCO(_T M, _T a) {
+template <typename T>
+CMATH_CONSTEXPR auto kerr_direct_ISCO(T M, T a) {
   auto rs = (2 * PHY_G / sqr(PHY_c)) * M;
   auto chi = 2 * a / rs;
   auto t1 = std::cbrt(1 - chi);

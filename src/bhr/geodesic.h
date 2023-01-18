@@ -9,12 +9,12 @@
 #include <bhr/euler_heisenberg.h>
 #endif
 
-template <typename _Spacetime, typename _Field, typename _Coord>
+template <typename Spacetime, typename Field, typename Coord>
 auto __direction(
-    const _Spacetime &spacetime,
-    const _Field &field,
-    const _Coord &position,
-    const _Coord &direction) {
+    const Spacetime &spacetime,
+    const Field &field,
+    const Coord &position,
+    const Coord &direction) {
 #if MAGNETIC_FIELD_FULL
   return geodesic_acceleration__magnetic_field(
       [&](auto position_u) { return spacetime.get_metric_ll(position_u); },
@@ -38,37 +38,37 @@ auto __direction(
 #endif
 }
 
-template <typename _Spacetime, typename _Coord>
+template <typename Spacetime, typename Coord>
 auto __direction(
-    const _Spacetime &spacetime,
+    const Spacetime &spacetime,
     const Null &/* field */,
-    const _Coord &position,
-    const _Coord &direction) {
+    const Coord &position,
+    const Coord &direction) {
   return spacetime.geodesic_acceleration(position, direction);
 }
 
-template <typename _Coord, typename ..._Extra>
-struct BasicGeodesicState : _Extra... {
-  typedef _Coord coord_type;
-  _Coord position;
-  _Coord direction;
+template <typename Coord, typename ...Extra>
+struct BasicGeodesicState : Extra... {
+  typedef Coord coord_type;
+  Coord position;
+  Coord direction;
 
   BasicGeodesicState() {}
-  BasicGeodesicState(const _Coord &_position, const _Coord &_direction)
+  BasicGeodesicState(const Coord &_position, const Coord &_direction)
       : position(_position), direction(_direction) {}
 
   friend inline auto numerical_sqr_distance(
       const BasicGeodesicState &A, const BasicGeodesicState &B) {
     return numerical_sqr_distance(A.position, B.position)
            + (numerical_sqr_distance(A.direction, B.direction)
-             + ... + numerical_sqr_distance(_Extra(A), _Extra(B)));
+             + ... + numerical_sqr_distance(Extra(A), Extra(B)));
   }
 
   template <typename U>
   friend inline void mult(BasicGeodesicState *self, const U &c) {
     mult(&self->position, c);
     mult(&self->direction, c);
-    (self->_Extra::_mult(c), ...);
+    (self->Extra::_mult(c), ...);
   }
 
   template <typename U>
@@ -76,7 +76,7 @@ struct BasicGeodesicState : _Extra... {
       BasicGeodesicState *self, const U &c, const BasicGeodesicState &A) {
     mult_add(&self->position, c, A.position);
     mult_add(&self->direction, c, A.direction);
-    (self->_Extra::_mult_add(c, A), ...);
+    (self->Extra::_mult_add(c, A), ...);
   }
 
   template <typename U>
@@ -85,7 +85,7 @@ struct BasicGeodesicState : _Extra... {
       const BasicGeodesicState &A, const U &c, const BasicGeodesicState &B) {
     set_and_mult_add(&self->position, A.position, c, B.position);
     set_and_mult_add(&self->direction, A.direction, c, B.direction);
-    (self->_Extra::_set_and_mult_add(A, c, B), ...);
+    (self->Extra::_set_and_mult_add(A, c, B), ...);
   }
 
   template <typename U>
@@ -105,22 +105,22 @@ struct BasicGeodesicState : _Extra... {
     set_and_mult_add(this, A, c, B);
   }
 
-  template <typename _Spacetime, typename _Field>
+  template <typename Spacetime, typename Field>
   inline BasicGeodesicState integration_step(
-      const _Spacetime &spacetime,
-      const _Field &field) const {
+      const Spacetime &spacetime,
+      const Field &field) const {
     BasicGeodesicState result;
     result.position = direction;
     result.direction = __direction(spacetime, field, position, direction);
     mult(&result.position, -1);
-    (result._Extra::integration_step__impl(spacetime, *this), ...);
+    (result.Extra::integration_step__impl(spacetime, *this), ...);
     return result;
   }
 };
 
 
-template <typename ..._Extra>
-struct GeodesicExtraBase : _Extra... {
+template <typename ...Extra>
+struct GeodesicExtraBase : Extra... {
 #if RENDER_DISK && RENDER_DISK != DISK_DUMMY
   // TEMPORARY: Used for disks.
   BoyerLindquistVector4<double> start_position;
@@ -137,14 +137,14 @@ struct GeodesicExtraBase : _Extra... {
     (void)spacetime;
     (void)basic;
     (void)used_dlambda;
-    (this->_Extra::post_step__impl(spacetime, basic, used_dlambda), ...);
+    (this->Extra::post_step__impl(spacetime, basic, used_dlambda), ...);
   }
 
   void finish(int dead_reason, int steps) {
     /* Call finish__impl for each extra part. */
     (void)dead_reason;
     (void)steps;
-    (this->_Extra::finish__impl(dead_reason, steps), ...);
+    (this->Extra::finish__impl(dead_reason, steps), ...);
   }
 
 };
@@ -252,10 +252,10 @@ struct GeodesicExtra__SavedLambdas : GeodesicExtra__Base {
 };
 
 
-template <typename _Coord>
+template <typename Coord>
 struct Geodesic__ParallelTransport {
-  typedef typename _Coord::value_type _T;
-  Matrix4<_T> parallel_transport_lu;
+  typedef typename Coord::value_type T;
+  Matrix4<T> parallel_transport_lu;
 
   Geodesic__ParallelTransport() {
     for (int i = 0; i < 4; ++i)
@@ -264,11 +264,11 @@ struct Geodesic__ParallelTransport {
   }
 
   template <typename Basic>
-  void __integration_step__impl(const Christoffel<_T> &christoffel_ull,
+  void __integration_step__impl(const Christoffel<T> &christoffel_ull,
                                 const Basic &basic) {
     for (int l = 0; l < 4; ++l) {
       for (int k = 0; k < 4; ++k) {
-        _T tmp = _T();
+        T tmp = T();
         for (int i = 0; i < 4; ++i)
           for (int j = 0; j < 4; ++j) {
             tmp += basic.direction[i]
@@ -282,12 +282,12 @@ struct Geodesic__ParallelTransport {
 
   template <typename Spacetime, typename Basic>
   void integration_step__impl(const Spacetime &spacetime, const Basic &basic) {
-    Christoffel<_T> christoffel_lll =
+    Christoffel<T> christoffel_lll =
         spacetime.get_christoffel_lll(basic.position);
     for (int l = 0; l < 4; ++l) {
-      _Coord result;  // result_l
+      Coord result;  // result_l
       for (int k = 0; k < 4; ++k) {
-        _T tmp = _T();
+        T tmp = T();
         for (int i = 0; i < 4; ++i)
           for (int j = 0; j < 4; ++j) {
             tmp += basic.direction[i]
@@ -333,16 +333,16 @@ struct Geodesic__ParallelTransport {
 };
 
 
-template <typename _Basic, typename _Extra>
+template <typename Basic, typename Extra>
 struct FullGeodesicData {
-  typedef _Basic basic_type;
-  typedef _Extra extra_type;
+  typedef Basic basic_type;
+  typedef Extra extra_type;
 
-  _Basic basic;
-  _Extra extra;
+  Basic basic;
+  Extra extra;
 };
 
-template <typename _Coord> using BasicFullGeodesicData =
-    FullGeodesicData<BasicGeodesicState<_Coord>, GeodesicExtraBase<>>;
+template <typename Coord> using BasicFullGeodesicData =
+    FullGeodesicData<BasicGeodesicState<Coord>, GeodesicExtraBase<>>;
 
 #endif

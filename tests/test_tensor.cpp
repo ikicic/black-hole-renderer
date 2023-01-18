@@ -6,35 +6,35 @@
 #include <bhr/schwarzschild.h>
 #include <bhr/tensor.h>
 
-template <typename _Coord,
-          typename _Spacetime,
+template <typename Coord,
+          typename Spacetime,
           typename PotentialLFunc,
           typename FLLFunc>
 static bool _test_geoacc(
-    const _Spacetime &spacetime,
+    const Spacetime &spacetime,
     PotentialLFunc potential_l_func,
     FLLFunc F_ll_func,
     double epsilon,
     bool compare_empty) {
   // auto F_ll_func = [&](auto position_u) {
-  //   typedef typename decltype(position_u)::value_type _T;
-  //   typedef first_partial_derivatives<_T, 4> fpds;
+  //   typedef typename decltype(position_u)::value_type T;
+  //   typedef first_partial_derivatives<T, 4> fpds;
   //   CartesianVector4<fpds> ad_position_u{
-  //     // fpds(position_u[0], (_T)1, (_T)0, (_T)0, (_T)0),
-  //     // fpds(position_u[1], (_T)0, (_T)1, (_T)0, (_T)0),
-  //     // fpds(position_u[2], (_T)0, (_T)0, (_T)1, (_T)0),
-  //     // fpds(position_u[3], (_T)0, (_T)0, (_T)0, (_T)1),
+  //     // fpds(position_u[0], (T)1, (T)0, (T)0, (T)0),
+  //     // fpds(position_u[1], (T)0, (T)1, (T)0, (T)0),
+  //     // fpds(position_u[2], (T)0, (T)0, (T)1, (T)0),
+  //     // fpds(position_u[3], (T)0, (T)0, (T)0, (T)1),
   //     fpds(position_u[0]),
   //     fpds(position_u[1]),
   //     fpds(position_u[2]),
   //     fpds(position_u[3])
   //   };
-  //   ad_position_u[0].first(0) = (_T)1;
-  //   ad_position_u[1].first(1) = (_T)1;
-  //   ad_position_u[2].first(2) = (_T)1;
-  //   ad_position_u[3].first(3) = (_T)1;
+  //   ad_position_u[0].first(0) = (T)1;
+  //   ad_position_u[1].first(1) = (T)1;
+  //   ad_position_u[2].first(2) = (T)1;
+  //   ad_position_u[3].first(3) = (T)1;
   //   const CartesianVector4<fpds> A_l = potential_l_func(ad_position_u);
-  //   Matrix4<_T> F_ll;
+  //   Matrix4<T> F_ll;
   //   for (int i = 0; i < 4; ++i)
   //     for (int j = 0; j < 4; ++j)
   //       F_ll[i][j] = A_l[j].first(i) - A_l[i].first(j);
@@ -42,13 +42,13 @@ static bool _test_geoacc(
   // };
 
   for (int k = 0; k < 100; ++k) {
-    _Coord position, direction;
+    Coord position, direction;
     random_vector(position, 1.0 * NEUTRON_STAR_r, 4.0 * NEUTRON_STAR_r);
     random_vector(direction, -0.1 * NEUTRON_STAR_r, 0.1 * NEUTRON_STAR_r);
 
     // std::cerr << "\n";
     // std::cerr << "=====================================================\n";
-    _Coord result1 = geodesic_acceleration__magnetic_field(
+    Coord result1 = geodesic_acceleration__magnetic_field(
         [&](auto position_u) { return spacetime.get_metric_ll(position_u); },
         [&](auto position_u) { return spacetime.get_metric_uu(position_u); },
         F_ll_func,
@@ -57,14 +57,14 @@ static bool _test_geoacc(
         direction
     );
     // std::cerr << "-----------------------------------------------------\n";
-    _Coord result2 = geodesic_acceleration__magnetic_field__lowest_order(
+    Coord result2 = geodesic_acceleration__magnetic_field__lowest_order(
         [&](auto position_u) { return spacetime.get_metric_ll(position_u); },
         [&](auto position_u) { return spacetime.get_metric_uu(position_u); },
         potential_l_func,
         position,
         direction
     );
-    _Coord result3 = !compare_empty
+    Coord result3 = !compare_empty
         ? result1
         : spacetime.geodesic_acceleration(position, direction);
 

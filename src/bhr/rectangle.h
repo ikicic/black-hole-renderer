@@ -1,22 +1,22 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
-template <typename _T>
-inline _T ccw(_T x1, _T y1, _T x2, _T y2, _T x3, _T y3) {
+template <typename T>
+inline T ccw(T x1, T y1, T x2, T y2, T x3, T y3) {
   return x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2);
 }
 
-template <typename _T, typename _TexCoord, typename _Color, typename _Texture>
+template <typename T, typename TexCoord, typename Color, typename Texture>
 void render_textured_axes_aligned_rectangle(
-    _T x1, _T y1,
-    _T x2, _T y2,
-    _TexCoord t1,
-    _TexCoord t2,
-    _TexCoord t3,
-    _TexCoord t4,
-    const _Texture &texture,
+    T x1, T y1,
+    T x2, T y2,
+    TexCoord t1,
+    TexCoord t2,
+    TexCoord t3,
+    TexCoord t4,
+    const Texture &texture,
     int width, int height,
-    _Color *output) {
+    Color *output) {
 
   /*  (x1, y1).................
    *     .                    .
@@ -79,17 +79,17 @@ void render_textured_axes_aligned_rectangle(
 
   // http://www.uio.no/studier/emner/matnat/ifi/INF4360/h09/undervisningsmateriale/bc_lecture.pdf
   // http://math.arizona.edu/~agillette/research/ccomOct11.pdf
-  auto wachspress_mix = [t1, t2, t3, t4, x1, y1, x2, y2](_T x, _T y) {
-    _T A1 = ccw(x1, y1, x2, y1, x, y);
-    _T A2 = ccw(x2, y1, x2, y2, x, y);
-    _T A3 = ccw(x2, y2, x1, y2, x, y);
-    _T A4 = ccw(x1, y2, x1, y1, x, y);
+  auto wachspress_mix = [t1, t2, t3, t4, x1, y1, x2, y2](T x, T y) {
+    T A1 = ccw(x1, y1, x2, y1, x, y);
+    T A2 = ccw(x2, y1, x2, y2, x, y);
+    T A3 = ccw(x2, y2, x1, y2, x, y);
+    T A4 = ccw(x1, y2, x1, y1, x, y);
 
-    _T w1 = A2 * A3;
-    _T w2 = A3 * A4;
-    _T w3 = A4 * A1;
-    _T w4 = A1 * A2;
-    _T invw = _T(1) / (w1 + w2 + w3 + w4);
+    T w1 = A2 * A3;
+    T w2 = A3 * A4;
+    T w3 = A4 * A1;
+    T w4 = A1 * A2;
+    T invw = T(1) / (w1 + w2 + w3 + w4);
 
     return (w1 * invw) * t1
          + (w2 * invw) * t2
@@ -98,19 +98,19 @@ void render_textured_axes_aligned_rectangle(
   };
 
   auto ADD = [output, &wachspress_mix, &texture, &width](
-      int X, int Y, _T xa, _T ya, _T xb, _T yb) {
+      int X, int Y, T xa, T ya, T xb, T yb) {
 
     // Wachspress Coordinates.
-    _TexCoord tf1 = wachspress_mix(xa, ya);
-    _TexCoord tf2 = wachspress_mix(xb, ya);
-    _TexCoord tf3 = wachspress_mix(xb, yb);
-    _TexCoord tf4 = wachspress_mix(xa, yb);
+    TexCoord tf1 = wachspress_mix(xa, ya);
+    TexCoord tf2 = wachspress_mix(xb, ya);
+    TexCoord tf3 = wachspress_mix(xb, yb);
+    TexCoord tf4 = wachspress_mix(xa, yb);
 
-    _Color color = texture.get_color(tf1, tf2, tf3, tf4);
+    Color color = texture.get_color(tf1, tf2, tf3, tf4);
     output[Y * width + X] += ((xb - xa) * (yb - ya)) * color;
   };
 
-  // TODO: add x1, y1 to all _T coords.
+  // TODO: add x1, y1 to all T coords.
   if (X1 == X2) {
     if (Y1 == Y2) {
       ADD(X1, Y1, x1, y1, x2, y2);
@@ -146,18 +146,18 @@ void render_textured_axes_aligned_rectangle(
 #undef ADD
 };
 
-template <typename _T, typename _Color>
-void render_axes_aligned_rectangle(_T x1, _T y1, _T x2, _T y2,
-    _Color color, int width, int height, _Color *output) {
+template <typename T, typename Color>
+void render_axes_aligned_rectangle(T x1, T y1, T x2, T y2,
+    Color color, int width, int height, Color *output) {
   /* A pixel (j, i) is represented by x in [j, j + 1> and y in [i, i + 1>. */
 
   if (x2 < x1) std::swap(x1, x2);
   if (y2 < y1) std::swap(y1, y2);
 
-  x1 = clamp(x1, _T(0), (_T)width);
-  y1 = clamp(y1, _T(0), (_T)height);
-  x2 = clamp(x2, _T(0), (_T)width);
-  y2 = clamp(y2, _T(0), (_T)height);
+  x1 = clamp(x1, T(0), (T)width);
+  y1 = clamp(y1, T(0), (T)height);
+  x2 = clamp(x2, T(0), (T)width);
+  y2 = clamp(y2, T(0), (T)height);
 
   int X1 = (int)x1;
   int Y1 = (int)y1;
@@ -203,11 +203,11 @@ void render_axes_aligned_rectangle(_T x1, _T y1, _T x2, _T y2,
 #undef ADD
 }
 
-template <typename _T, typename _Color>
-void render_axes_aligned_rectangle_border(_T x1, _T y1, _T x2, _T y2,
-    _Color color,
+template <typename T, typename Color>
+void render_axes_aligned_rectangle_border(T x1, T y1, T x2, T y2,
+    Color color,
     double inner, double outer,
-    int width, int height, _Color *output) {
+    int width, int height, Color *output) {
   if (x2 < x1) std::swap(x1, x2);
   if (y2 < y1) std::swap(y1, y2);
 

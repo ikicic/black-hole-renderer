@@ -27,39 +27,39 @@ class FlatDipole {
     }};
   }
 
-  template <typename _T>
-  inline CartesianVector4<_T> get_potential_l(
-      const CartesianVector4<_T> &position_u) const {
-    const CartesianVector<_T, 3> position3{
+  template <typename T>
+  inline CartesianVector4<T> get_potential_l(
+      const CartesianVector4<T> &position_u) const {
+    const CartesianVector<T, 3> position3{
       position_u[1],
       position_u[2],
       position_u[3],
     };
-    const _T r = position_u.get_r();
-    return _T(PHY_mu0 / (4 * M_PI)) * extend_vector(
-        _T(),
+    const T r = position_u.get_r();
+    return T(PHY_mu0 / (4 * M_PI)) * extend_vector(
+        T(),
         -inverse(cube(r)) * cross(dipole, position3)
     );
   }
 
-  template <typename _Vector3>
-  inline _Vector3 _get_magnetic_field(const _Vector3 &position) const {
+  template <typename Vector3>
+  inline Vector3 _get_magnetic_field(const Vector3 &position) const {
     auto inv_r = inv_sqrt(position.sqr_length());
     return (PHY_mu0 / (4 * M_PI)) * cube(inv_r) * (
         3 * position.dot(dipole) * sqr(inv_r) * position
-        - _Vector3{{dipole[0], dipole[1], dipole[2]}}
+        - Vector3{{dipole[0], dipole[1], dipole[2]}}
     );
   }
 
-  template <typename _T>
-  inline Matrix4<_T> get_F_ll(const CartesianVector4<_T> &position_u) const {
-    const CartesianVector<_T, 3> position3{
+  template <typename T>
+  inline Matrix4<T> get_F_ll(const CartesianVector4<T> &position_u) const {
+    const CartesianVector<T, 3> position3{
       position_u[1],
       position_u[2],
       position_u[3],
     };
-    const CartesianVector<_T, 3> B = _get_magnetic_field(position3);
-    return Matrix4<_T>{{
+    const CartesianVector<T, 3> B = _get_magnetic_field(position3);
+    return Matrix4<T>{{
         {0, 0, 0, 0},
         {0, 0, -B[2], B[1]},
         {0, B[2], 0, -B[0]},

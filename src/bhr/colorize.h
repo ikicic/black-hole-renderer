@@ -9,18 +9,18 @@
 #include <bhr/recursive_render.h>
 
 
-template <typename _FullGeodesicData, typename... Args>
-void colorize(const Snapshot<_FullGeodesicData> *snapshot, Args... args) {
+template <typename FullGeodesicData, typename... Args>
+void colorize(const Snapshot<FullGeodesicData> *snapshot, Args... args) {
   // TODO: How to avoid this? Virtual templated functions are not supported.
   {
-    auto p = dynamic_cast<const SnapshotMatrix<_FullGeodesicData> *>(snapshot);
+    auto p = dynamic_cast<const SnapshotMatrix<FullGeodesicData> *>(snapshot);
     if (p) {
       colorize_from_matrix_snapshot(*p, args...);
       return;
     }
   }
   {
-    auto p = dynamic_cast<const SnapshotRecursive<_FullGeodesicData> *>(snapshot);
+    auto p = dynamic_cast<const SnapshotRecursive<FullGeodesicData> *>(snapshot);
     if (p) {
       colorize_from_recursive_snapshot(*p, args...);
       return;

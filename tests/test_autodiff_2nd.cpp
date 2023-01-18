@@ -20,7 +20,7 @@ bool test_autodiff_2nd(void) {
       first_partial_derivatives<double, 2> Y = X * X;
       first_partial_derivatives<double, 2> Z = sqr(X);
 
-      for (int i = 0; i < Y._M; ++i)
+      for (int i = 0; i < Y.M_; ++i)
         CHECK(std::abs(Y.d[i] - Z.d[i]) < 1e-9, X << Y << Z);
     }
 
@@ -28,7 +28,7 @@ bool test_autodiff_2nd(void) {
       second_partial_derivatives<double, 2> X(a, b, c, 0.134, 0.534, 0.43);
       second_partial_derivatives<double, 2> Y = X * X;
       second_partial_derivatives<double, 2> Z = sqr(X);
-      for (int i = 0; i < Y._M; ++i)
+      for (int i = 0; i < Y.M_; ++i)
         CHECK(std::abs(Y.d[i] - Z.d[i]) < 1e-9, X << Y << Z);
     }
   }
@@ -63,10 +63,10 @@ bool test_autodiff_2nd(void) {
     second_partial_derivatives<double, 3> Z = X * Y;
     second_partial_derivatives<double, 3> W = X; W *= Y;
     CHECK(std::abs(Z.value() - 1) < 1e-9, Z);
-    for (int i = 1; i < Y._M; ++i)
+    for (int i = 1; i < Y.M_; ++i)
       CHECK(std::abs(Z.d[i]) < 1e-9, "i=" << i << "  Z=" << Z);
     CHECK(std::abs(W.value() - 1) < 1e-9, Z);
-    for (int i = 1; i < Y._M; ++i)
+    for (int i = 1; i < Y.M_; ++i)
       CHECK(std::abs(W.d[i]) < 1e-9, "i=" << i << "  W=" << W);
   }
 
@@ -75,23 +75,23 @@ bool test_autodiff_2nd(void) {
         // 5, .132, .541, 6., .625, .236, .465, .3456, .3465, .15);
         // 5, 1, 0, 0, 0, 0, 0, 0, 0, 0);
         5, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    for (int i = 0; i < X._M; ++i)
+    for (int i = 0; i < X.M_; ++i)
       X.d[i] = random_double(0.1, 1.0);
 
     second_partial_derivatives<double, 3> Y = exp(log(X));
-    for (int i = 0; i < Y._M; ++i)
+    for (int i = 0; i < Y.M_; ++i)
       CHECK(std::abs(Y.d[i] - X.d[i]) < 1e-9, "i=" << i << "  Y=" << Y);
 
     second_partial_derivatives<double, 3> Z = coth(X);
     second_partial_derivatives<double, 3>
         W = (exp(X) + exp(-X)) / (exp(X) - exp(-X));
-    for (int i = 0; i < Z._M; ++i) {
+    for (int i = 0; i < Z.M_; ++i) {
       CHECK(std::abs(Z.d[i] - W.d[i]) < 1e-9,
             "i=" << i << "\nZ=" << Z << "\nW=" << W);
     }
 
     second_partial_derivatives<double, 3> Y1 = sqrt(sqr(X));
-    for (int i = 0; i < Y1._M; ++i)
+    for (int i = 0; i < Y1.M_; ++i)
       CHECK(std::abs(Y1.d[i] - X.d[i]) < 1e-9, "i=" << i << "  Y1=" << Y1);
   }
 

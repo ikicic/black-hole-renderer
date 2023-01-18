@@ -27,11 +27,11 @@
 #define BLACK_HOLE_COLOR (RGBd{0.7, 0.7, 0.7})
 #endif
 
-template <typename _FullGeodesicData>
-class SnapshotMatrix : public Snapshot<_FullGeodesicData> {
+template <typename FullGeodesicData>
+class SnapshotMatrix : public Snapshot<FullGeodesicData> {
  public:
   SnapshotMatrix(int width, int height)
-      : Snapshot<_FullGeodesicData>(width, height), geodesics(nullptr) {}
+      : Snapshot<FullGeodesicData>(width, height), geodesics(nullptr) {}
   ~SnapshotMatrix() {
     delete []geodesics;
     geodesics = nullptr;
@@ -39,7 +39,7 @@ class SnapshotMatrix : public Snapshot<_FullGeodesicData> {
 
   virtual bool load(FILE *f) {
     const int total = this->width * this->height;
-    geodesics = new _FullGeodesicData[total];
+    geodesics = new FullGeodesicData[total];
 
     const int result = fread(geodesics, sizeof(geodesics[0]), total, f);
     if (result != total) {
@@ -83,7 +83,7 @@ class SnapshotMatrix : public Snapshot<_FullGeodesicData> {
     fclose(f3);
   }
 
-  _FullGeodesicData *geodesics;
+  FullGeodesicData *geodesics;
 };
 
 
@@ -92,38 +92,38 @@ void _generate_image_status_thread(std::vector<int> &finished_pixels_vec,
                                    int width,
                                    int height);
 
-template <typename _Coord, typename _T, typename _Spacetime>
-std::pair<_Coord, _Coord> cartesian3d_to_coord4d(
-    const CartesianVector<_T, 3> &position_cart3,
-    const CartesianVector<_T, 3> &direction_cart3,
-    const _Spacetime &spacetime) {
-  CartesianVector4<_T> position_cart4(extend_vector((_T)0, position_cart3));
-  CartesianVector4<_T> direction_cart4(extend_vector((_T)0, direction_cart3));
+template <typename Coord, typename T, typename Spacetime>
+std::pair<Coord, Coord> cartesian3d_to_coord4d(
+    const CartesianVector<T, 3> &position_cart3,
+    const CartesianVector<T, 3> &direction_cart3,
+    const Spacetime &spacetime) {
+  CartesianVector4<T> position_cart4(extend_vector((T)0, position_cart3));
+  CartesianVector4<T> direction_cart4(extend_vector((T)0, direction_cart3));
 
-  _Coord position, direction;
+  Coord position, direction;
   convert_point_and_diff(
       Null(), position_cart4, direction_cart4,
-      spacetime.coord_system_parameters(_Coord()), position, direction);
+      spacetime.coord_system_parameters(Coord()), position, direction);
   direction[0] = guess_null_geodesic_t_coord(spacetime, position, direction);
   return std::make_pair(position, direction);
 }
 
 
 template <
-    typename _Spacetime,
-    typename _Field,
-    typename _FullGeodesicData,
+    typename Spacetime,
+    typename Field,
+    typename FullGeodesicData,
     typename DLambdaFunc>
 int integrate_single_geodesic(
-    const _Spacetime &spacetime,
-    const _Field &field,
+    const Spacetime &spacetime,
+    const Field &field,
     const Camera *raytracer_camera,
     DLambdaFunc dlambda_func,
     real_t x,
     real_t y,
-    _FullGeodesicData *output) {
+    FullGeodesicData *output) {
 
-  typedef typename _FullGeodesicData::basic_type basic_type;
+  typedef typename FullGeodesicData::basic_type basic_type;
   typedef typename basic_type::coord_type coord_type;
   // constexpr real_t flat_measure = 0.00001;
 
@@ -162,7 +162,7 @@ int integrate_single_geodesic(
   constexpr int N = 100000;
   if (N % 2) fprintf(stderr, "x=%.25lf y=%.25lf\n", x, y);
 #if DISK_POLARIZATION
-  typename _FullGeodesicData::simple_version simple;
+  typename FullGeodesicData::simple_version simple;
   int result = generate_geodesic(
       spacetime, field, break_condition_func, position,
       direction, N, dlambda, &simple);
@@ -182,19 +182,19 @@ int integrate_single_geodesic(
   return result;
 }
 
-template <typename _Spacetime, typename _Field, typename _FullGeodesicData,
-          typename _dlambdaFunc>
+template <typename Spacetime, typename Field, typename FullGeodesicData,
+          typename DLambdaFunc>
 void _generate_image_worker_thread(
     std::stack<std::pair<int, int>> &tasks,
     std::mutex &tasks_mutex,
     int *finished_pixels,
-    const _Spacetime &spacetime,
-    const _Field &field,
+    const Spacetime &spacetime,
+    const Field &field,
     const Camera *raytracer_camera,
-    const _dlambdaFunc &dlambda_func,
+    const DLambdaFunc &dlambda_func,
     int width,
     int height,
-    _FullGeodesicData *output) {
+    FullGeodesicData *output) {
 
   for (;;) {
     tasks_mutex.lock();
@@ -219,23 +219,23 @@ void _generate_image_worker_thread(
   };
 }
 
-template <typename _FullGeodesicData, typename _Spacetime, typename _Field,
-          typename _dlambdaFunc>
+template <typename FullGeodesicData, typename Spacetime, typename Field,
+          typename DLambdaFunc>
 void generate_image(
-    const _Spacetime &spacetime,
-    const _Field &field,
+    const Spacetime &spacetime,
+    const Field &field,
     const Camera *raytracer_camera,
-    const _dlambdaFunc &dlambda_func,
+    const DLambdaFunc &dlambda_func,
     int width,
     int height,
-    SnapshotMatrix<_FullGeodesicData> *output_snapshot,
+    SnapshotMatrix<FullGeodesicData> *output_snapshot,
     int thread_count) {
 
   fprintf(stderr, "Rendering %dx%d image. Threads=%d\n",
       width, height, thread_count);
 
   delete []output_snapshot->geodesics;
-  output_snapshot->geodesics = new _FullGeodesicData[width * height];
+  output_snapshot->geodesics = new FullGeodesicData[width * height];
 
   std::stack<std::pair<int, int>> tasks;
   std::mutex tasks_mutex;
@@ -253,7 +253,7 @@ void generate_image(
   for (int i = 0; i < thread_count; ++i) {
     threads.emplace_back(
         _generate_image_worker_thread<
-            _Spacetime, _Field, _FullGeodesicData, _dlambdaFunc>,
+            Spacetime, Field, FullGeodesicData, DLambdaFunc>,
         std::ref(tasks),
         std::ref(tasks_mutex),
         &finished_pixels_vec[i],
@@ -272,14 +272,14 @@ void generate_image(
   }
 }
 
-template <typename _FullGeodesicData, typename _Spacetime, typename DiskTex>
+template <typename FullGeodesicData, typename Spacetime, typename DiskTex>
 RGBd get_single_geodesic_color(
-    const _Spacetime &spacetime,
+    const Spacetime &spacetime,
 #if SKY_ENABLED
     const Image &sky,
 #endif
     const DiskTex &disk_tex,
-    const _FullGeodesicData &full) {
+    const FullGeodesicData &full) {
   (void)disk_tex;
   (void)spacetime;
 
@@ -296,7 +296,7 @@ RGBd get_single_geodesic_color(
 #endif
 #if FAKE_SKY
   } else if (dead_reason >= DEAD_SKY_TEX_OFFSET) {
-    typedef typename _FullGeodesicData::basic_type basic_type;
+    typedef typename FullGeodesicData::basic_type basic_type;
     typedef typename basic_type::coord_type coord_type;
     auto spherical = full.basic.position.spherical_part(
           spacetime.coord_system_parameters(coord_type()));
@@ -310,7 +310,7 @@ RGBd get_single_geodesic_color(
   } else {
 #if SKY_ENABLED
     std::tie(tx, ty) = basic.position.spherical_part(
-          spacetime.coord_system_parameters(_Coord())).to_txty();
+          spacetime.coord_system_parameters(Coord())).to_txty();
     return sky.get_pixel_rel(tx, ty).to_RGBd();
 #else
     return SKY_COLOR;
@@ -319,10 +319,10 @@ RGBd get_single_geodesic_color(
 }
 
 
-template <typename _Spacetime, typename _FullGeodesicData, typename DiskTex>
+template <typename Spacetime, typename FullGeodesicData, typename DiskTex>
 void colorize_from_matrix_snapshot(
-    const SnapshotMatrix<_FullGeodesicData> &snapshot,
-    const _Spacetime &spacetime,
+    const SnapshotMatrix<FullGeodesicData> &snapshot,
+    const Spacetime &spacetime,
 #if SKY_ENABLED
     const Image &sky,
 #endif

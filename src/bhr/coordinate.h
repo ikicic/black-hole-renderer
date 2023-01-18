@@ -10,8 +10,8 @@
 typedef Vector<real_t, 4> Vector4;
 typedef Vector<real_t, 3> Vector3;
 
-template <typename _T> struct SphericalPart {
-  _T theta, phi;
+template <typename T> struct SphericalPart {
+  T theta, phi;
 
   inline std::pair<double, double> to_txty(void) const {
     // return std::make_pair(spherical.phi, spherical.theta);
@@ -35,49 +35,49 @@ template <typename _T> struct SphericalPart {
   }
 };
 
-template <typename _T, int _N> using CartesianVector = Vector<_T, _N>;
-template <typename _T> struct CartesianVector4 : Vector<_T, 4> {
+template <typename T, int N> using CartesianVector = Vector<T, N>;
+template <typename T> struct CartesianVector4 : Vector<T, 4> {
   static constexpr bool is_spherical = false;
 
-  typedef _T value_type;
+  typedef T value_type;
 
   CartesianVector4() = default;
-  CartesianVector4(const _T &t, const _T &x, const _T &y, const _T &z) {
+  CartesianVector4(const T &t, const T &x, const T &y, const T &z) {
     (*this)[0] = t;
     (*this)[1] = x;
     (*this)[2] = y;
     (*this)[3] = z;
   }
-  CartesianVector4(const Vector<_T, 4> &v) : Vector<_T, 4>(v) {}
+  CartesianVector4(const Vector<T, 4> &v) : Vector<T, 4>(v) {}
 
-  inline SphericalPart<_T> spherical_part(const Null &) const {
+  inline SphericalPart<T> spherical_part(const Null &) const {
     return {
       std::atan2(std::sqrt(sqr((*this)[1]) + sqr((*this)[2])), (*this)[3]),
       std::atan2((*this)[2], (*this)[1])
     };
   }
-  inline _T get_z(void) const {
+  inline T get_z(void) const {
     return (*this)[3];
   }
-  inline _T get_r(void) const {
+  inline T get_r(void) const {
     return sqrt(sqr((*this)[1]) + sqr((*this)[2]) + sqr((*this)[3]));
   }
 
   /* Utility specialization BEGIN. */
-  friend inline void mult(CartesianVector4 *self, const _T &c) {
+  friend inline void mult(CartesianVector4 *self, const T &c) {
     for (int i = 0; i < 4; ++i)
       (*self)[i] *= c;
   }
 
   friend inline void mult_add(
-      CartesianVector4 *self, const _T &c, const CartesianVector4 &A) {
+      CartesianVector4 *self, const T &c, const CartesianVector4 &A) {
     for (int i = 0; i < 4; ++i)
       (*self)[i] += c * A[i];
   }
 
   friend inline void set_and_mult_add(
       CartesianVector4 *self, const CartesianVector4 &A,
-      const _T &c, const CartesianVector4 &B) {
+      const T &c, const CartesianVector4 &B) {
     for (int i = 0; i < 4; ++i)
       (*self)[i] = A[i] + c * B[i];
   }
@@ -90,70 +90,70 @@ template <typename _T> struct CartesianVector4 : Vector<_T, 4> {
   /* Utility specialization END. */
 };
 
-template <typename _T> inline void convert_point(
+template <typename T> inline void convert_point(
     const Null &/* cartesian parameters */,
-    const CartesianVector4<_T> &p,
+    const CartesianVector4<T> &p,
     const Null &/* cartesian parameters */,
-    CartesianVector4<_T> &P) {
+    CartesianVector4<T> &P) {
   P = p;
 }
 
-template <typename _T> inline void convert_point_and_diff(
+template <typename T> inline void convert_point_and_diff(
     const Null &/* cartesian params */,
-    const CartesianVector4<_T> &pos_cart,
-    const CartesianVector4<_T> &diff_cart,
+    const CartesianVector4<T> &pos_cart,
+    const CartesianVector4<T> &diff_cart,
     const Null &/* cartesian params */,
-    CartesianVector4<_T> &position,
-    CartesianVector4<_T> &diff) {
+    CartesianVector4<T> &position,
+    CartesianVector4<T> &diff) {
   position = pos_cart;
   diff = diff_cart;
 }
 
-template <typename _T> struct SphericalVector4 {
+template <typename T> struct SphericalVector4 {
   static constexpr bool is_spherical = true;
-  typedef _T value_type;
-  _T t, r, theta, phi;
+  typedef T value_type;
+  T t, r, theta, phi;
 
-  inline SphericalPart<_T> spherical_part(const Null &/* dummy */) const {
+  inline SphericalPart<T> spherical_part(const Null &/* dummy */) const {
     return {theta, phi};
   }
-  inline _T get_z(void) const {
+  inline T get_z(void) const {
     return r * std::cos(theta);
   }
-  inline _T get_r(void) const {
+  inline T get_r(void) const {
     return r;
   }
 
-  inline _T &operator[](int k) {
-    return ((_T *)this)[k];
+  inline T &operator[](int k) {
+    return ((T *)this)[k];
   }
-  inline const _T &operator[](int k) const {
-    return ((_T *)this)[k];
+  inline const T &operator[](int k) const {
+    return ((T *)this)[k];
   }
 
   /* Utility specialization BEGIN. */
-  template <typename _T2>
-  friend inline void mult(SphericalVector4 *self, const _T2 &c) {
+  template <typename T2>
+  friend inline void mult(SphericalVector4 *self, const T2 &c) {
     self->t *= c;
     self->r *= c;
     self->theta *= c;
     self->phi *= c;
   }
 
-  template <typename _T2>
+  template <typename T2>
   friend inline void mult_add(SphericalVector4 *self,
-      const _T2 &c, const SphericalVector4 &A) {
+      const T2 &c, const SphericalVector4 &A) {
     self->t += c * A.t;
     self->r += c * A.r;
     self->theta += c * A.theta;
     self->phi += c * A.phi;
   }
 
-  template <typename _T2>
+  template <typename T2>
   friend inline void set_and_mult_add(
       SphericalVector4 *self,
       const SphericalVector4 &A,
-      const _T2 &c, const SphericalVector4 &B) {
+      const T2 &c, const SphericalVector4 &B) {
     self->t = A.t + c * B.t;
     self->r = A.r + c * B.r;
     self->theta = A.theta + c * B.theta;
@@ -174,23 +174,23 @@ template <typename _T> struct SphericalVector4 {
   }
 };
 
-template <typename _T> inline void convert_point(
+template <typename T> inline void convert_point(
     const Null &/* spherical parameters */,
-    const SphericalVector4<_T> &p,
+    const SphericalVector4<T> &p,
     const Null &/* cartesian parameters */,
-    CartesianVector4<_T> &P) {
-  _T tmp = p.r * sin(p.theta);
+    CartesianVector4<T> &P) {
+  T tmp = p.r * sin(p.theta);
   P[0] = p.t;
   P[1] = tmp * cos(p.phi);
   P[2] = tmp * sin(p.phi);
   P[3] = p.r * cos(p.theta);
 }
 
-template <typename _T> inline void convert_point(
+template <typename T> inline void convert_point(
     const Null &/* cartesian parameters */,
-    const CartesianVector4<_T> &pos_cart,
+    const CartesianVector4<T> &pos_cart,
     const Null &/* spherical parameters */,
-    SphericalVector4<_T> &position) {
+    SphericalVector4<T> &position) {
   auto ss = sqr(pos_cart[1]) + sqr(pos_cart[2]);
   auto zz = sqr(pos_cart[3]);
 
@@ -200,13 +200,13 @@ template <typename _T> inline void convert_point(
   position.phi = atan2(pos_cart[2], pos_cart[1]);
 }
 
-template <typename _T> inline void convert_point_and_diff(
+template <typename T> inline void convert_point_and_diff(
     const Null &/* spherical parameters */,
-    const SphericalVector4<_T> &position,
-    const SphericalVector4<_T> &diff,
+    const SphericalVector4<T> &position,
+    const SphericalVector4<T> &diff,
     const Null &/* cartesian parameters */,
-    CartesianVector4<_T> &pos_cart,
-    CartesianVector4<_T> &diff_cart) {
+    CartesianVector4<T> &pos_cart,
+    CartesianVector4<T> &diff_cart) {
   using std::sin;
   using std::cos;
   const auto sint = sin(position.theta);
@@ -219,7 +219,7 @@ template <typename _T> inline void convert_point_and_diff(
   pos_cart[2] = r * sint * sinp;
   pos_cart[3] = r * cost;
 
-  Matrix3<_T> mat{{
+  Matrix3<T> mat{{
     {sint * cosp, r * cost * cosp, -r * sint * sinp},
     {sint * sinp, r * cost * sinp, r * sint * cosp},
     {cost, -r * sint, 0}}};
@@ -230,13 +230,13 @@ template <typename _T> inline void convert_point_and_diff(
   diff_cart[3] = mat[2][0] * diff[1] + mat[2][1] * diff[2] + mat[2][2] * diff[3];
 }
 
-template <typename _T> inline void convert_point_and_diff(
+template <typename T> inline void convert_point_and_diff(
     const Null &/* cartesian parameters */,
-    const CartesianVector4<_T> &pos_cart,
-    const CartesianVector4<_T> &diff_cart,
+    const CartesianVector4<T> &pos_cart,
+    const CartesianVector4<T> &diff_cart,
     const Null &/* spherical parameters */,
-    SphericalVector4<_T> &position,
-    SphericalVector4<_T> &diff) {
+    SphericalVector4<T> &position,
+    SphericalVector4<T> &diff) {
   auto ss = sqr(pos_cart[1]) + sqr(pos_cart[2]);
   auto s = sqrt(ss);
   auto zz = sqr(pos_cart[3]);
@@ -253,11 +253,11 @@ template <typename _T> inline void convert_point_and_diff(
   auto cosp = pos_cart[1] / s;
   auto sinp = pos_cart[2] / s;
 
-  Matrix3<_T> mat{{
+  Matrix3<T> mat{{
       {sint * cosp, r * cost * cosp, -r * sint * sinp},
       {sint * sinp, r * cost * sinp, r * sint * cosp},
       {cost, -r * sint, 0}}};
-  Matrix3<_T> inv = matrix3_inverse(mat);
+  Matrix3<T> inv = matrix3_inverse(mat);
 
   diff.t = diff_cart[0];
   diff.r = inv[0][0] * diff_cart[1] + inv[0][1] * diff_cart[2] + inv[0][2] * diff_cart[3];
@@ -282,52 +282,52 @@ struct KerrSpacetimeCoordParams {
 
 
 
-template <typename _T> struct BoyerLindquistVector4 {
+template <typename T> struct BoyerLindquistVector4 {
   static constexpr bool is_spherical = true;
-  typedef _T value_type;
-  _T t, r, theta, phi;
+  typedef T value_type;
+  T t, r, theta, phi;
 
-  inline SphericalPart<_T> spherical_part(
+  inline SphericalPart<T> spherical_part(
       KerrSpacetimeCoordParams /* a */) const {
     return {theta, phi};
   }
-  inline _T get_z(void) const {
+  inline T get_z(void) const {
     return r * std::cos(theta);
   }
-  inline _T get_r(void) const {
+  inline T get_r(void) const {
     return r;
   }
 
-  inline _T &operator[](int k) {
-    return ((_T *)this)[k];
+  inline T &operator[](int k) {
+    return ((T *)this)[k];
   }
-  inline const _T &operator[](int k) const {
-    return ((_T *)this)[k];
+  inline const T &operator[](int k) const {
+    return ((T *)this)[k];
   }
 
   /* Utility specialization BEGIN. */
-  template <typename _T2>
-  friend inline void mult(BoyerLindquistVector4 *self, const _T2 &c) {
+  template <typename T2>
+  friend inline void mult(BoyerLindquistVector4 *self, const T2 &c) {
     self->t *= c;
     self->r *= c;
     self->theta *= c;
     self->phi *= c;
   }
 
-  template <typename _T2>
+  template <typename T2>
   friend inline void mult_add(BoyerLindquistVector4 *self,
-      const _T2 &c, const BoyerLindquistVector4 &A) {
+      const T2 &c, const BoyerLindquistVector4 &A) {
     self->t += c * A.t;
     self->r += c * A.r;
     self->theta += c * A.theta;
     self->phi += c * A.phi;
   }
 
-  template <typename _T2>
+  template <typename T2>
   friend inline void set_and_mult_add(
       BoyerLindquistVector4 *self,
       const BoyerLindquistVector4 &A,
-      const _T2 &c, const BoyerLindquistVector4 &B) {
+      const T2 &c, const BoyerLindquistVector4 &B) {
     self->t = A.t + c * B.t;
     self->r = A.r + c * B.r;
     self->theta = A.theta + c * B.theta;
@@ -348,25 +348,25 @@ template <typename _T> struct BoyerLindquistVector4 {
   }
 };
 
-template <typename _T> inline void convert_point(
+template <typename T> inline void convert_point(
     const KerrSpacetimeCoordParams &params,
-    const BoyerLindquistVector4<_T> &p,
+    const BoyerLindquistVector4<T> &p,
     const Null &/* cartesian parameters */,
-    CartesianVector4<_T> &P) {
-  _T tmp = sqrt(sqr(p.r) + sqr(params.a)) * sin(p.theta);
+    CartesianVector4<T> &P) {
+  T tmp = sqrt(sqr(p.r) + sqr(params.a)) * sin(p.theta);
   P[0] = p.t;
   P[1] = tmp * cos(p.phi);
   P[2] = tmp * sin(p.phi);
   P[3] = p.r * cos(p.theta);
 }
 
-template <typename _T> inline void convert_point_and_diff(
+template <typename T> inline void convert_point_and_diff(
     const KerrSpacetimeCoordParams &params,
-    const BoyerLindquistVector4<_T> &position,
-    const BoyerLindquistVector4<_T> &diff,
+    const BoyerLindquistVector4<T> &position,
+    const BoyerLindquistVector4<T> &diff,
     const Null &/* cartesian parameters */,
-    CartesianVector4<_T> &pos_cart,
-    CartesianVector4<_T> &diff_cart) {
+    CartesianVector4<T> &pos_cart,
+    CartesianVector4<T> &diff_cart) {
   using std::sin;
   using std::cos;
   using std::sqrt;
@@ -381,7 +381,7 @@ template <typename _T> inline void convert_point_and_diff(
   pos_cart[2] = rho * sint * sinp;
   pos_cart[3] = r * cost;
 
-  Matrix3<_T> mat{{
+  Matrix3<T> mat{{
     {r / rho * sint * cosp, r * cost * cosp, -r * sint * sinp},
     {r / rho * sint * sinp, r * cost * sinp, r * sint * cosp},
     {cost, -r * sint, 0}}};
@@ -392,11 +392,11 @@ template <typename _T> inline void convert_point_and_diff(
   diff_cart[3] = mat[2][0] * diff[1] + mat[2][1] * diff[2] + mat[2][2] * diff[3];
 }
 
-template <typename _T> inline void convert_point(
+template <typename T> inline void convert_point(
     const Null &/* cartesian parameters */,
-    const CartesianVector4<_T> &pos_cart,
+    const CartesianVector4<T> &pos_cart,
     const KerrSpacetimeCoordParams &params,
-    BoyerLindquistVector4<_T> &position) {
+    BoyerLindquistVector4<T> &position) {
   auto ss = sqr(pos_cart[1]) + sqr(pos_cart[2]);
   auto zz = sqr(pos_cart[3]);
   auto aa = sqr(params.a);
@@ -410,13 +410,13 @@ template <typename _T> inline void convert_point(
   position.phi = atan2(pos_cart[2], pos_cart[1]);
 }
 
-template <typename _T> inline void convert_point_and_diff(
+template <typename T> inline void convert_point_and_diff(
     const Null &/* cartesian parameters */,
-    const CartesianVector4<_T> &pos_cart,
-    const CartesianVector4<_T> &diff_cart,
+    const CartesianVector4<T> &pos_cart,
+    const CartesianVector4<T> &diff_cart,
     const KerrSpacetimeCoordParams &params,
-    BoyerLindquistVector4<_T> &position,
-    BoyerLindquistVector4<_T> &diff) {
+    BoyerLindquistVector4<T> &position,
+    BoyerLindquistVector4<T> &diff) {
   auto ss = sqr(pos_cart[1]) + sqr(pos_cart[2]);
   auto zz = sqr(pos_cart[3]);
   auto aa = sqr(params.a);
@@ -436,11 +436,11 @@ template <typename _T> inline void convert_point_and_diff(
   auto cosp = pos_cart[1] / s;
   auto sinp = pos_cart[2] / s;
 
-  Matrix3<_T> mat{{
+  Matrix3<T> mat{{
     {r / ra * sint * cosp, r * cost * cosp, -r * sint * sinp},
     {r / ra * sint * sinp, r * cost * sinp, r * sint * cosp},
     {cost, -r * sint, 0}}};
-  Matrix3<_T> inv = matrix3_inverse(mat);
+  Matrix3<T> inv = matrix3_inverse(mat);
 
   diff.t = diff_cart[0];
   diff.r = inv[0][0] * diff_cart[1] + inv[0][1] * diff_cart[2] + inv[0][2] * diff_cart[3];
@@ -449,24 +449,24 @@ template <typename _T> inline void convert_point_and_diff(
 }
 
 namespace std {
-  template <typename _T>
-  inline bool isfinite(const CartesianVector4<_T> &position) {
+  template <typename T>
+  inline bool isfinite(const CartesianVector4<T> &position) {
     return std::isfinite(position[0])
         && std::isfinite(position[1])
         && std::isfinite(position[2])
         && std::isfinite(position[3]);
   }
 
-  template <typename _T>
-  inline bool isfinite(const SphericalVector4<_T> &position) {
+  template <typename T>
+  inline bool isfinite(const SphericalVector4<T> &position) {
     return std::isfinite(position.t)
         && std::isfinite(position.r)
         && std::isfinite(position.theta)
         && std::isfinite(position.phi);
   }
 
-  template <typename _T>
-  inline bool isfinite(const BoyerLindquistVector4<_T> &position) {
+  template <typename T>
+  inline bool isfinite(const BoyerLindquistVector4<T> &position) {
     return std::isfinite(position.t)
         && std::isfinite(position.r)
         && std::isfinite(position.theta)
