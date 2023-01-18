@@ -1,11 +1,13 @@
 #ifndef RECURSIVE_RENDER_H
 #define RECURSIVE_RENDER_H
 
-#include <map>
-
 #include <bhr/geodesic.h>
 #include <bhr/utility.h>
 #include <bhr/rectangle.h>
+
+#include <map>
+
+namespace bhr {
 
 #define LOCATION_FACTOR   (1 << 16)
 
@@ -557,5 +559,7 @@ void colorize_from_recursive_snapshot(
 
   fprintf(stderr, "total geodesics: %d\n", (int)snapshot.geodesics.size());
 }
+
+}  // namespace bhr
 
 #endif

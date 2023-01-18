@@ -3,6 +3,8 @@
 
 #include <bhr/spacetime.h>
 
+namespace bhr {
+
 void check_kerr(void);
 
 class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
@@ -293,5 +295,6 @@ class KerrSpacetime : public BlackHoleBase<KerrSpacetime> {
   }
 };
 
+}  // namespace bhr
 
 #endif

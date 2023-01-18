@@ -3,6 +3,8 @@
 
 #include <bhr/utility.h>
 
+namespace bhr {
+
 template <typename T, int N>
 struct Matrix {
   T v[N][N];
@@ -294,4 +296,7 @@ Matrix3<T> matrix3_inverse(const Matrix3<T> &m) {
   output[2][2] = (m[0][0] * m[1][1] - m[1][0] * m[0][1]) * invdet;
   return output;
 }
+
+}  // namespace bhr
+
 #endif

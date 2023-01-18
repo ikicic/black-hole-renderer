@@ -1,6 +1,7 @@
 #ifndef NUMERIC_H
 #define NUMERIC_H
 
+namespace bhr {
 
 template <typename T, typename Coef>
 T evaluate_polynomial(const Coef *coef, int N, const T &x) {
@@ -27,5 +28,7 @@ inline T evaluate_pade(
     const Coef (&num)[N], const Coef (&den)[M], const T &x) {
   return evaluate_pade(num, N, den, M, x);
 }
+
+}  // namespace bhr
 
 #endif

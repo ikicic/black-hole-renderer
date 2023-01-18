@@ -1,6 +1,8 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
+namespace bhr {
+
 template <typename T>
 inline T ccw(T x1, T y1, T x2, T y2, T x3, T y3) {
   return x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2);
@@ -222,5 +224,7 @@ void render_axes_aligned_rectangle_border(T x1, T y1, T x2, T y2,
   RENDER(x1 - outer, y1 + inner, x1 + inner, y2 - inner);
 #undef RENDER
 }
+
+}  // namespace bhr
 
 #endif

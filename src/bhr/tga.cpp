@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <cstring>
 
+namespace bhr {
+
 bool load_TGA(Image *image, FILE *f) {
   char file_header[12];
   const char tga_header[12] = {0,0,2,0,0,0,0,0,0,0,0,0};
@@ -104,5 +106,6 @@ bool save_CSV(RGBd *image, int width, int height, const char *filename) {
   bool result = save_CSV(image, width, height, f);
   fclose(f);
   return result;
-
 }
+
+}  // namespace bhr

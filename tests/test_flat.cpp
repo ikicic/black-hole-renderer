@@ -2,6 +2,8 @@
 #include <bhr/flat.h>
 #include <bhr/field.h>
 
+namespace bhr {
+
 bool test_flat_magnetic_field(void) {
   static int result = -1;
   if (result != -1)
@@ -65,3 +67,5 @@ bool test_flat_magnetic_field(void) {
 //
 // }
 //
+
+}  // namespace bhr

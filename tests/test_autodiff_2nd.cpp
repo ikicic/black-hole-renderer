@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cassert>
 
+namespace bhr {
+
 #define CHECK(a, b) { \
     if (!(a)) { \
       std::cerr << "\nFailed:\n" #a "\n" << b << '\n'; \
@@ -116,3 +118,5 @@ bool test_autodiff_2nd(void) {
   // }
   return true;
 }
+
+}  // namespace bhr

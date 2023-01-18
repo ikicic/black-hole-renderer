@@ -4,6 +4,8 @@
 #include <limits>
 #include <type_traits>
 
+namespace bhr {
+
 // http://stackoverflow.com/questions/4633177/c-how-to-wrap-a-float-to-the-interval-pi-pi
 template<typename T, typename T2>
 T Mod(T x, T2 y) {
@@ -41,5 +43,7 @@ T Mod(T x, T2 y) {
 
   return m;
 }
+
+}  // namespace bhr
 
 #endif

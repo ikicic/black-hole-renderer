@@ -1,6 +1,10 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include <bhr/base.h>
+
+namespace bhr {
+
 struct Image {
   int width;
   int height;
@@ -75,5 +79,6 @@ class DummyTexture {
   }
 };
 
+}  // namespace bhr
 
 #endif

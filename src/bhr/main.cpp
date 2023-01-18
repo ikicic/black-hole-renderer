@@ -20,6 +20,8 @@
 #include <cstring>
 #include <thread>
 
+namespace bhr {
+
 int debug = 1;
 
 // Hope this isn't reserved by something important.
@@ -417,7 +419,7 @@ template <typename Coord> using __FullGeodesicData =
     >;
 #endif
 
-int main(int argc, char **argv) {
+static int bhr_main(int argc, char **argv) {
 #if CHECK_KERR
   check_kerr();
   return 0;
@@ -487,7 +489,7 @@ int main(int argc, char **argv) {
     Null field;
     if (debug) {
       fprintf(stderr, "(parse debug script scale) _BLACK_HOLE_r_S = %lg\n",
-        sqrt(_BLACK_HOLE_r_S * spacetime.black_hole_radius()));
+              std::sqrt(_BLACK_HOLE_r_S * spacetime.black_hole_radius()));
     }
     //  ok = generate_main<__FullGeodesicData<BoyerLindquistVector4<real_t>>>(
     //      S, KerrSpacetime());
@@ -609,4 +611,10 @@ int main(int argc, char **argv) {
   fprintf(stderr, "Finished in %.2lfs.\n\n", time_delta.count());
 
   return ok ? 0 : 1;
+}
+
+}  // namespace bhr
+
+int main(int argc, char **argv) {
+  return bhr::bhr_main(argc, argv);
 }

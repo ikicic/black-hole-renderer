@@ -6,6 +6,8 @@
 #include <bhr/schwarzschild.h>
 #include <bhr/tensor.h>
 
+namespace bhr {
+
 template <typename Coord,
           typename Spacetime,
           typename PotentialLFunc,
@@ -135,3 +137,5 @@ bool test_geodesic_acceleration__magnetic_field(void) {
 
   return true;
 }
+
+}  // namespace bhr

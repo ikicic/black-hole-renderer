@@ -1,9 +1,12 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
+#include <bhr/coordinate.h>
+#include <bhr/integration.h>
 #include <bhr/physical_constants.h>
 #include <bhr/utility.h>
-#include <bhr/integration.h>
+
+namespace bhr {
 
 class Camera {
  public:
@@ -272,5 +275,7 @@ auto generate_geodesic(
   output->extra.finish(return_type(), N);
   return return_type();
 }
+
+}  // namespace bhr
 
 #endif

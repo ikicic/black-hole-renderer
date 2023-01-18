@@ -3,6 +3,8 @@
 
 #include <bhr/tensor.h>
 
+namespace bhr {
+
 #define DERIVED (static_cast<const Derived *>(this))
 
 // https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
@@ -164,4 +166,7 @@ inline T guess_null_geodesic_t_coord(const Spacetime &spacetime,
 }
 
 #undef DERIVED
+
+}  // namespace bhr
+
 #endif

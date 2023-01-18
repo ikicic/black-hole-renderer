@@ -2,12 +2,11 @@
 #define UTILITY_H
 
 #include <cassert>
+#include <bhr/config.h>
 
-#ifndef __clang__
-# define CMATH_CONSTEXPR  constexpr
-#else
-# define CMATH_CONSTEXPR
-#endif
+namespace bhr {
+
+struct Null{ }; // empty class
 
 template <typename T>
 constexpr inline auto sqr(T x) { return x * x; }
@@ -118,5 +117,6 @@ inline void set_and_mult_add(State *out, const State &A, const T &c, const State
   mult_add_multiple(out, args...);
 }
 
+}  // namespace bhr
 
 #endif

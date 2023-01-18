@@ -3,6 +3,8 @@
 #if RENDER_DISK
 #include <bhr/disk.h>
 
+namespace bhr {
+
 ShakuraSunyaevDisk *_shakura_sunyaev = nullptr;
 double shakura_sunyaev_height(double r) {
   return _shakura_sunyaev->get_height(r);
@@ -17,5 +19,7 @@ bool load_disk_relief_texture(void) {
   return disk_relief_tex.load("images/relief.tga");
 }
 #endif
+
+}  // namespace bhr
 
 #endif

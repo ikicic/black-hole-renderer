@@ -7,6 +7,8 @@
 
 #include <bhr/utility.h>
 
+namespace bhr {
+
 template<typename T, int N>
 struct first_partial_derivatives {
   typedef T value_type;
@@ -215,5 +217,7 @@ struct first_partial_derivatives {
     return false;
   }
 };
+
+}  // namespace bhr
 
 #endif

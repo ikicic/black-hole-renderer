@@ -1,6 +1,8 @@
 #ifndef FIELD_H
 #define FIELD_H
 
+namespace bhr {
+
 class FlatDipole {
   double m;
   const double theta;
@@ -118,5 +120,7 @@ class FlatDipole {
     std::cerr << "Dipole vector=" << dipole << '\n';
   }
 };
+
+}  // namespace bhr
 
 #endif

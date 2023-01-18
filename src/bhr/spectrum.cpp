@@ -1,11 +1,13 @@
+#include <bhr/3rd/specrend.h>
 #include <bhr/base.h>
 #include <bhr/spectrum.h>
 #include <bhr/utility.h>
-#include <bhr/3rd/specrend.h>
 
 #include <cassert>
 #include <cmath>
 #include <vector>
+
+namespace bhr {
 
 #define MIN_TEMPERATURE   1.
 #define MAX_TEMPERATURE   100000.
@@ -75,3 +77,5 @@ RGBA to_RGBAub(const RGBd &rgb) {
       clamp((int)(255 * rgb[2]), 0, 255)
   );
 }
+
+}  // namespace bhr

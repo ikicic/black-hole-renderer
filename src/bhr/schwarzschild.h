@@ -4,6 +4,8 @@
 #include <cmath>
 #include <bhr/spacetime.h>
 
+namespace bhr {
+
 class SchwarzschildSpacetime : public BlackHoleBase<SchwarzschildSpacetime> {
  public:
 #if PREDEFINED_PARAMS
@@ -210,5 +212,7 @@ class SchwarzschildDipole {
         mu, mu / (UNIT_T * cube(UNIT_m)), rs, rs / UNIT_km);
   }
 };
+
+}  // namespace bhr
 
 #endif

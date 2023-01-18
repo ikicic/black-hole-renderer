@@ -1,5 +1,7 @@
 #include "tests.h"
 
+namespace bhr {
+
 bool test_spherical(void) {
   for (int _test = 0; _test < 100; ++_test) {
     CartesianVector4<double> v, v_old, dv, w_cart;
@@ -21,3 +23,5 @@ bool test_spherical(void) {
 
   return true;
 }
+
+}  // namespace bhr

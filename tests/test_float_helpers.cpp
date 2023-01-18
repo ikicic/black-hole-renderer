@@ -1,6 +1,8 @@
 #include "tests.h"
 #include <bhr/float_helpers.h>
 
+namespace bhr {
+
 static bool test_constexpr_sqrt() {
   constexpr double expected[] = {
     0.0,
@@ -31,3 +33,4 @@ bool test_float_helpers() {
   return test_constexpr_sqrt();
 }
 
+}  // namespace bhr

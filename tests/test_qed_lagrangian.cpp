@@ -1,6 +1,8 @@
 #include "tests.h"
 #include <bhr/qed_lagrangian.h>
 
+namespace bhr {
+
 // WARNING: Testing no-autodiff version only!
 bool test_magnetic_only_lagrangian__base(void) {
   static const double result1[] = {
@@ -305,3 +307,5 @@ bool test_qed_metric_correction_lambda__low_limit(void) {
 //   if (!_test_qed_metric_correction__flat()) return false;
 //   return true;
 // }
+
+}  // namespace bhr

@@ -3,14 +3,18 @@
 
 #if RENDER_DISK
 
-#include <bhr/physical_constants.h>
-#include <bhr/texture.h>
-#include <bhr/mod.h>
-#include <bhr/spectrum.h>
-
 #include <bhr/chandra1960.h>
 #include <bhr/colors.h>
+#include <bhr/matrix.h>
+#include <bhr/mod.h>
+#include <bhr/parameters.h>
+#include <bhr/physical_constants.h>
+#include <bhr/spectrum.h>
+#include <bhr/texture.h>
+
 #include <tuple>
+
+namespace bhr {
 
 #if DISK_RELIEF_TEXTURE
 extern Image disk_relief_tex;
@@ -454,5 +458,7 @@ class DummyDiskTexture {
 };
 
 #endif
+
+}  // namespace bhr
 
 #endif

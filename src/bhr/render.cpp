@@ -3,6 +3,8 @@
 #include <thread>
 #include <vector>
 
+namespace bhr {
+
 void _generate_image_status_thread(
     std::vector<int> &finished_pixels_vec,
     int width,
@@ -26,4 +28,4 @@ void _generate_image_status_thread(
   fprintf(stderr, "\n");
 }
 
-
+}  // namespace bhr

@@ -3,6 +3,8 @@
 
 #include <bhr/spacetime.h>
 
+namespace bhr {
+
 class ReissnerNordstromSpacetime
     : public BlackHoleBase<ReissnerNordstromSpacetime> {
  public:
@@ -103,5 +105,6 @@ class ReissnerNordstromSpacetime
   }
 };
 
+}  // namespace bhr
 
 #endif

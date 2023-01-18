@@ -2,6 +2,8 @@
 #include <bhr/coordinate.h>
 #include <bhr/flat.h>
 
+namespace bhr {
+
 // bool test_flat_spherical(void) {
 //   FlatSpacetime spacetime;
 //
@@ -26,3 +28,5 @@
 //
 // }
 //
+
+}  // namespace bhr

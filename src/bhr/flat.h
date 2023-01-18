@@ -3,6 +3,8 @@
 
 #include <bhr/spacetime.h>
 
+namespace bhr {
+
 class FlatSpacetime : public SpacetimeBase<FlatSpacetime> {
   typedef SpacetimeBase<FlatSpacetime> _Parent;
  public:
@@ -169,5 +171,7 @@ class FlatSpacetime : public SpacetimeBase<FlatSpacetime> {
     }};
   }
 };
+
+}  // namespace bhr
 
 #endif

@@ -4,6 +4,9 @@
 #include <bhr/base.h>
 #include <bhr/coordinate.h>
 #include <bhr/utility.h>
+#include <iostream>
+
+namespace bhr {
 
 /* Misc */
 bool test_float_helpers();
@@ -116,5 +119,7 @@ inline bool _compare_eq_rel(const T &received,
 
 #define compare_eq_rel(a, b, c, d) \
    (_compare_eq_rel((a), (b), (c), (d), __FILE__, __LINE__))
+
+}  // namespace bhr
 
 #endif

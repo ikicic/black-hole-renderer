@@ -1,6 +1,7 @@
 #include <bhr/base.h>
 #include <bhr/floatimage.h>
 
+namespace bhr {
 
 RGBd *load_floating_point_image(FILE *f, int width, int height) {
   unsigned int size = width * height;
@@ -36,3 +37,5 @@ bool save_floating_point_image(FILE *f, int width, int height, RGBd *rgbd) {
   delete []rgbf;
   return saved == size;
 }
+
+}  // namespace bhr

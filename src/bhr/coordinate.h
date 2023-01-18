@@ -1,10 +1,16 @@
 #ifndef COORDINATE_SYSTEMS_H
 #define COORDINATE_SYSTEMS_H
 
+#include <bhr/config.h>
 #include <bhr/matrix.h>
-#include <bhr/utility.h>
-#include <bhr/parameters.h>
 #include <bhr/mod.h>
+#include <bhr/utility.h>
+
+#if PREDEFINED_PARAMS
+#include <bhr/parameters.h>
+#endif
+
+namespace bhr {
 
 // TODO: Write interface for spherical coordinates?
 typedef Vector<real_t, 4> Vector4;
@@ -237,6 +243,7 @@ template <typename T> inline void convert_point_and_diff(
     const Null &/* spherical parameters */,
     SphericalVector4<T> &position,
     SphericalVector4<T> &diff) {
+  using std::sqrt;
   auto ss = sqr(pos_cart[1]) + sqr(pos_cart[2]);
   auto s = sqrt(ss);
   auto zz = sqr(pos_cart[3]);
@@ -397,6 +404,7 @@ template <typename T> inline void convert_point(
     const CartesianVector4<T> &pos_cart,
     const KerrSpacetimeCoordParams &params,
     BoyerLindquistVector4<T> &position) {
+  using std::sqrt;
   auto ss = sqr(pos_cart[1]) + sqr(pos_cart[2]);
   auto zz = sqr(pos_cart[3]);
   auto aa = sqr(params.a);
@@ -417,6 +425,7 @@ template <typename T> inline void convert_point_and_diff(
     const KerrSpacetimeCoordParams &params,
     BoyerLindquistVector4<T> &position,
     BoyerLindquistVector4<T> &diff) {
+  using std::sqrt;
   auto ss = sqr(pos_cart[1]) + sqr(pos_cart[2]);
   auto zz = sqr(pos_cart[3]);
   auto aa = sqr(params.a);
@@ -448,30 +457,30 @@ template <typename T> inline void convert_point_and_diff(
   diff.phi = inv[2][0] * diff_cart[1] + inv[2][1] * diff_cart[2] + inv[2][2] * diff_cart[3];
 }
 
-namespace std {
-  template <typename T>
-  inline bool isfinite(const CartesianVector4<T> &position) {
-    return std::isfinite(position[0])
-        && std::isfinite(position[1])
-        && std::isfinite(position[2])
-        && std::isfinite(position[3]);
-  }
-
-  template <typename T>
-  inline bool isfinite(const SphericalVector4<T> &position) {
-    return std::isfinite(position.t)
-        && std::isfinite(position.r)
-        && std::isfinite(position.theta)
-        && std::isfinite(position.phi);
-  }
-
-  template <typename T>
-  inline bool isfinite(const BoyerLindquistVector4<T> &position) {
-    return std::isfinite(position.t)
-        && std::isfinite(position.r)
-        && std::isfinite(position.theta)
-        && std::isfinite(position.phi);
-  }
+template <typename T>
+inline bool isfinite(const CartesianVector4<T> &position) {
+  return std::isfinite(position[0])
+      && std::isfinite(position[1])
+      && std::isfinite(position[2])
+      && std::isfinite(position[3]);
 }
+
+template <typename T>
+inline bool isfinite(const SphericalVector4<T> &position) {
+  return std::isfinite(position.t)
+      && std::isfinite(position.r)
+      && std::isfinite(position.theta)
+      && std::isfinite(position.phi);
+}
+
+template <typename T>
+inline bool isfinite(const BoyerLindquistVector4<T> &position) {
+  return std::isfinite(position.t)
+      && std::isfinite(position.r)
+      && std::isfinite(position.theta)
+      && std::isfinite(position.phi);
+}
+
+}  // namespace bhr
 
 #endif

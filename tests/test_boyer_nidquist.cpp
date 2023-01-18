@@ -2,6 +2,8 @@
 #include <bhr/schwarzschild.h>
 #include <bhr/kerr.h>
 
+namespace bhr {
+
 bool test_boyer_lindquist2(void) {
   // /* Comparison with spherical for a = 0 */
   // for (int _test = 0; _test < 100; ++_test) {
@@ -53,3 +55,5 @@ bool test_boyer_lindquist(void) {
 #endif
   return true;
 }
+
+}  // namespace bhr

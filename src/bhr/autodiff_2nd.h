@@ -2,6 +2,9 @@
 #define AUTODIFF_2ND_H
 
 #include <bhr/autodiff.h>
+#include <bhr/utility.h>
+
+namespace bhr {
 
 template <typename T, int N>
 struct second_partial_derivatives {
@@ -82,7 +85,7 @@ struct second_partial_derivatives {
   }
   friend inline This inverse(const This &A) {
     This result;
-    const T inv = ::inverse(A.d[0]);
+    const T inv = bhr::inverse(A.d[0]);
     const T inv_sqr = sqr(inv);
     result.d[0] = inv;
     for (int i = 1; i <= N; ++i)
@@ -341,5 +344,7 @@ struct second_partial_derivatives {
     return false;
   }
 };
+
+}  // namespace bhr
 
 #endif

@@ -3,6 +3,9 @@
 
 #include <cassert>
 #include <bhr/float_helpers.h>
+#include <bhr/utility.h>
+
+namespace bhr {
 
 #define TEST_UNITS  0
 #if TEST_UNITS
@@ -128,5 +131,7 @@ constexpr QUANTITY(1, 2,-2, 0) PHY_black_body_sigma =
     (2 * M_PI * sqr(sqr(M_PI)) / 15) * sqr(sqr(PHY_kB) / PHY_c) / cube(PHY_h);
 
 void debug_units(void);
+
+}  // namespace bhr
 
 #endif

@@ -1,11 +1,12 @@
-#include <bhr/base.h>
-#include <bhr/settings.h>
-#include <bhr/parameters.h>
-
 #include <bhr/3rd/sha1.h>
+#include <bhr/base.h>
+#include <bhr/parameters.h>
+#include <bhr/settings.h>
 
 #include <sstream>
 #include <thread>
+
+namespace bhr {
 
 bool Settings::check(void) const {
   if (type == SPACETIME_KERR && a > M) {
@@ -301,3 +302,5 @@ std::string Settings::get_image_filename(void) const {
 
 #undef DELIM
 #undef ADD_VECTOR3
+
+}  // namespace bhr

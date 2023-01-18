@@ -4,59 +4,12 @@
 #include <cmath>
 #include <vector>
 
-typedef double real_t;
-typedef double colreal_t;  // color real
+#include <bhr/config.h>
+#include <bhr/vector.h>
 
-struct Null{ }; // empty class
+namespace bhr {
 
 extern int debug;
-
-#define DISK_DUMMY      1
-#define DISK_KERTAP     2
-#define DISK_SHAKURA    3
-
-#define CHECK_KERR          0
-#define CHECK_LAMBDA_PRECISION  0
-#define GENERATE_LAMBDAS    0
-
-#define PREPROCESS_LAMBDAS  1
-#define RENDER_DISK         DISK_KERTAP
-#define DISK_POLARIZATION   (RENDER_DISK == DISK_KERTAP)
-#define SKY_ENABLED         0
-#define MAGNETIC_FIELD      0
-#define MAGNETIC_FIELD_FULL 0
-
-#if MAGNETIC_FIELD_FULL && !MAGNETIC_FIELD
-#error MAGNETIC_FIELD_FULL requires MAGNETIC_FIELD
-#endif
-
-#define FAKE_SKY      0
-#define DISK_RELIEF_TEXTURE 0
-
-/* Params BEGIN. */
-#define PREDEFINED_PARAMS 1
-
-#if PREDEFINED_PARAMS
-# define PARAMS_CONSTEXPR        constexpr
-# define PARAMS_CMATH_CONSTEXPR  CMATH_CONSTEXPR
-# define PARAMS_FUNC_CONST
-# define PARAMS_FUNC_STATIC                  static
-# define PARAMS_FUNC_STATIC_CONSTEXPR        static constexpr
-# define PARAMS_FUNC_STATIC_CMATH_CONSTEXPR  static CMATH_CONSTEXPR
-#else
-/* blah... */
-# define PARAMS_CONSTEXPR                    const
-# define PARAMS_CMATH_CONSTEXPR              const
-# define PARAMS_FUNC_CONST                   const
-# define PARAMS_FUNC_STATIC                  inline
-# define PARAMS_FUNC_STATIC_CONSTEXPR        inline
-# define PARAMS_FUNC_STATIC_CMATH_CONSTEXPR  inline
-#endif
-/* Params END. */
-
-#include <bhr/vector.h>
-#include <bhr/coordinate.h>
-
 
 #define DEAD_BLACK_HOLE     1
 #define DEAD_FLAT           2
@@ -64,8 +17,6 @@ extern int debug;
 #define DEAD_OBJECT         4
 #define DEAD_UNUSED         30
 #define DEAD_SKY_TEX_OFFSET 0x01000000
-
-
 
 template <typename T>
 struct RGB : Vector<T, 3> {
@@ -95,11 +46,6 @@ typedef Vector<colreal_t, 3> XYZd;
 typedef RGB<colreal_t> RGBd;
 typedef RGB<float> RGBf;
 
-// utility.h
-inline double numerical_sqr_distance(const RGBd &A, const RGBd &B) {
-  return sqr(A[0] - B[0]) + sqr(A[1] - B[1]) + sqr(A[2] - B[2]);
-}
-
 struct RGBA {
   unsigned int rgba;
 
@@ -125,19 +71,9 @@ struct RGBA {
 };
 
 
-template <typename T1, typename T2, typename T3>
-inline bool is_between(const T1 &x, const T2 &low, const T3 &high) {
-  return low <= x && x <= high;
-}
-template <typename T>
-inline int int_sgn(const T &x) {
-  return x > 0 ? 1 : (x < 0 ? -1 : 0);
-}
 inline double random_double(double low, double high) {
   return low + (high - low) * rand() / RAND_MAX;
 }
-
-struct Image;
 
 template <typename FullGeodesicData>
 class Snapshot {
@@ -151,5 +87,7 @@ class Snapshot {
   int width;
   int height;
 };
+
+}  // namespace bhr
 
 #endif

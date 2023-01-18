@@ -2,7 +2,9 @@
 #define VECTOR_H
 
 #include <cmath>
-#include <iostream>
+#include <ostream>
+
+namespace bhr {
 
 #define _RESULT_FOR(i) \
   Vector result; \
@@ -109,7 +111,7 @@ template<typename T, int N> struct Vector {
 
 template <typename T1, typename T2>
 inline Vector<decltype(T1() * T2()), 3> cross(const Vector<T1, 3> &A,
-                                                const Vector<T2, 3> &B) {
+                                              const Vector<T2, 3> &B) {
   return {{
     A.v[1] * B.v[2] - A.v[2] * B.v[1],
     A.v[2] * B.v[0] - A.v[0] * B.v[2],
@@ -134,7 +136,9 @@ inline auto numerical_sqr_distance(
   return (A - B).sqr_length();
 }
 
-
 #undef _RESULT_FOR
 #undef _FOR
+
+}  // namespace bhr
+
 #endif

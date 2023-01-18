@@ -1,6 +1,8 @@
 #include "tests.h"
 #include <bhr/integration.h>
 
+namespace bhr {
+
 bool test_integrate__RGF45(void) {
   // Solve f'(x) = 1 + f^2(x), f(0) = 0 --> f(x) = tan(x)
   auto RHS = [](double x) {
@@ -19,3 +21,5 @@ bool test_integrate__RGF45(void) {
 
   return true;
 }
+
+}  // namespace bhr

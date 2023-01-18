@@ -8,6 +8,8 @@
 #include <iostream>
 #include <map>
 
+namespace bhr {
+
 #define TEXTURE_FILTER_NONE       1
 #define TEXTURE_FILTER_BILINEAR   2
 
@@ -86,3 +88,5 @@ Image *load_image_and_cache(const std::string &filename) {
 
   return iter->second;
 }
+
+}  // namespace bhr

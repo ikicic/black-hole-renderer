@@ -1,19 +1,20 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include <bhr/disk.h>
-#include <bhr/raytracer.h>
-#include <bhr/geodesic.h>
-#include <bhr/texture.h>
-#include <bhr/spectrum.h>
 #include <bhr/3rd/specrend.h>
-
+#include <bhr/disk.h>
+#include <bhr/geodesic.h>
 #include <bhr/line.h>
+#include <bhr/raytracer.h>
+#include <bhr/spectrum.h>
+#include <bhr/texture.h>
 
 #include <mutex>
 #include <stack>
 #include <thread>
 #include <utility>
+
+namespace bhr {
 
 #define OBJECT_COLOR (RGBd{0., 1., 1.})
 #if 1
@@ -135,7 +136,7 @@ int integrate_single_geodesic(
 
   auto break_condition_func =
     [&spacetime](const coord_type &position, const coord_type &direction) {
-      if (!std::isfinite(position) || !std::isfinite(direction))
+      if (!isfinite(position) || !isfinite(direction))
         return DEAD_BLACK_HOLE;
       if (position.get_r() < NEUTRON_STAR_r)
         return DEAD_BLACK_HOLE;
@@ -453,5 +454,6 @@ void colorize_from_matrix_snapshot(
 
 }
 
+}  // namespace bhr
 
 #endif

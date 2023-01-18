@@ -3,6 +3,8 @@
 #include <bhr/kerr.h>
 #include <bhr/autodiff.h>
 
+namespace bhr {
+
 template <typename T, typename Coord>
 void _get_kerr_autodiff_christoffel(
     const KerrSpacetime &kerr,
@@ -94,3 +96,5 @@ bool test_kerr(void) {
 
   return true;
 }
+
+}  // namespace bhr

@@ -1,13 +1,16 @@
 #ifndef GEODESIC_H
 #define GEODESIC_H
 
-#include <bhr/utility.h>
-#include <bhr/tensor.h>
+#include <bhr/coordinate.h>
 #include <bhr/matrix.h>
+#include <bhr/tensor.h>
+#include <bhr/utility.h>
 
 #if MAGNETIC_FIELD_FULL
 #include <bhr/euler_heisenberg.h>
 #endif
+
+namespace bhr {
 
 template <typename Spacetime, typename Field, typename Coord>
 auto __direction(
@@ -344,5 +347,7 @@ struct FullGeodesicData {
 
 template <typename Coord> using BasicFullGeodesicData =
     FullGeodesicData<BasicGeodesicState<Coord>, GeodesicExtraBase<>>;
+
+}  // namespace bhr
 
 #endif

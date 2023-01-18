@@ -8,6 +8,8 @@
 #include <bhr/render.h>
 #include <bhr/recursive_render.h>
 
+namespace bhr {
+
 
 template <typename FullGeodesicData, typename... Args>
 void colorize(const Snapshot<FullGeodesicData> *snapshot, Args... args) {
@@ -273,5 +275,7 @@ void apply_color_filters(
       );
     }
 }
+
+}  // namespace bhr
 
 #endif

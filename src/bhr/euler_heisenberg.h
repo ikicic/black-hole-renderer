@@ -3,8 +3,11 @@
 
 #include <complex>
 #include <bhr/numerics.h>
+#include <bhr/parameters.h>
 
 /* REFERENCE: 0107135v2 - QED Effective Action Revisited */
+
+namespace bhr {
 
 namespace EH {
 
@@ -728,7 +731,8 @@ inline T lagrangian_real(const T &F, const T &G) {
   return lagrangian(F, G).first;
 }
 
+}  // namespace EH
 
-}
+}  // namespace bhr
 
 #endif

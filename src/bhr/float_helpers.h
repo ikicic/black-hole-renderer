@@ -3,6 +3,8 @@
 
 #include <limits>
 
+namespace bhr {
+
 // Based on https://gist.github.com/alexshtf/eb5128b3e3e143187794
 constexpr double constexpr_sqrt(double x) {
     if (!(0.0 <= x && x < std::numeric_limits<double>::infinity()))
@@ -20,5 +22,7 @@ constexpr double constexpr_sqrt(double x) {
 constexpr float constexpr_sqrt(float x) {
   return static_cast<float>(constexpr_sqrt(static_cast<double>(x)));
 }
+
+}  // namespace bhr
 
 #endif

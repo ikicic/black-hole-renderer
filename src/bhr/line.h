@@ -1,6 +1,8 @@
 #ifndef LINE_H
 #define LINE_H
 
+namespace bhr {
+
 template <typename T, typename Color>
 void render_line(T x1, T y1, T x2, T y2,
     Color color, int width, int height, Color *output) {
@@ -30,5 +32,7 @@ void render_arrow(T x, T y, T dx, T dy, T size, T angle,
   render_line(x2, y2, x2 - dx * scos + dy * ssin, y2 - dy * scos - dx * ssin,
               color, width, height, output);
 }
+
+}  // namespace bhr
 
 #endif

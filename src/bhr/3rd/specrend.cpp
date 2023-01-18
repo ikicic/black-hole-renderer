@@ -42,6 +42,8 @@
 #include <cstdio>
 #include <cmath>
 
+namespace bhr {
+
 /* White point chromaticities. */
 
 #define IlluminantC     0.3101, 0.3162        /* For NTSC television */
@@ -362,3 +364,5 @@ int main()
     return 0;
 }
 */
+
+}  // namespace bhr

@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+namespace bhr {
+
 int debug = 1;  // Global variable in the bhr_lib.
 
 #define TEST(func, name) \
@@ -37,7 +39,8 @@ static bool test_all(void) {
   return true;
 }
 
+}  // namespace bhr
 
 int main() {
-  return test_all() ? 0 : 1;
+  return bhr::test_all() ? 0 : 1;
 }

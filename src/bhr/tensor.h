@@ -5,6 +5,8 @@
 #include <bhr/physical_constants.h>
 #include <bhr/qed_lagrangian.h>
 
+namespace bhr {
+
 template <typename T> struct Christoffel {
   typedef T matrix44[4][4];
   matrix44 mat[4];
@@ -335,5 +337,7 @@ inline Vector<T> geodesic_acceleration__magnetic_field(
   }
   return result_u;
 }
+
+}  // namespace bhr
 
 #endif

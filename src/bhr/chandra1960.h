@@ -1,7 +1,11 @@
 #ifndef CHANDRA_1960
 #define CHANDRA_1960
 
+#include <bhr/utility.h>
+
 #include <utility>
+
+namespace bhr {
 
 inline std::pair<double, double> chandra1960(double mu) {
   // Copied from KERTAP::chandra60.m.
@@ -30,5 +34,7 @@ inline std::pair<double, double> chandra1960(double mu) {
       linear_interpolation(del_list, M, 0., mu, 1.)
   );
 }
+
+}  // namespace bhr
 
 #endif

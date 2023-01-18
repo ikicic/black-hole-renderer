@@ -11,6 +11,8 @@
 #include <thread>
 #include <sstream>
 
+namespace bhr {
+
 namespace QEDCache {
 
 /* Everything is in the units of B_c. */
@@ -44,7 +46,7 @@ LambdaCacheType get_cached_lambdas__dimless(double F, double G) {
   std::tie(x, y) = FG_to_coord(F + 1e-20, G + 1e-20);
   int i = (int)y;
   int j = (int)x;
-  //if (i < 0 || j < 0 || i >= CNT_G - 1 || j >= CNT_F - 1) {
+  //if (i < 0 || j < 0 || i >= CNT_G - 1 || j >= CNT_F - 1)
 
   // Anyway inside the neutron star...
   if (i >= CNT_G - 1)
@@ -328,7 +330,7 @@ void check_lambda_interpolation_precision(void) {
 }
 #endif
 
-};
+}  // namespace QEDCache
 
 
 
@@ -367,4 +369,6 @@ void generate_lambdas(void) {
 }
 #endif
 
-};
+}  // namespace QED
+
+}  // namespace bhr

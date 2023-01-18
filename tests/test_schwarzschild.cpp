@@ -1,6 +1,8 @@
 #include "tests.h"
 #include <bhr/schwarzschild.h>
 
+namespace bhr {
+
 // bool test_schwarzschild_dipole(void) {
 //   SchwarzschildSpacetime spacetime;
 //   SchwarzschildDipole field(spacetime);
@@ -21,3 +23,5 @@
 //
 //   return true;
 // }
+
+}  // namespace bhr

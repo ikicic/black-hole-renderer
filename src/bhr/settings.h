@@ -1,6 +1,10 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <bhr/coordinate.h>
+
+namespace bhr {
+
 enum SpacetimeEnum {
   SPACETIME_FLAT = 1,
   SPACETIME_SCHWARZSCHILD = 2,
@@ -69,5 +73,7 @@ std::string get_settings_geodesics_hash(const Settings &settings);
 std::string get_settings_image_hash(const Settings &settings);
 std::string generate_geodesics_filename(const Settings &settings);
 std::string generate_image_filename(const Settings &settings);
+
+}  // namespace bhr
 
 #endif

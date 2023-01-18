@@ -2,6 +2,8 @@
 #include <bhr/euler_heisenberg.h>
 #include <bhr/qed_lagrangian.h>
 
+namespace bhr {
+
 bool test_euler_heisenberg_special1(void) {
   static const double result1[] = {
     0,
@@ -708,3 +710,5 @@ bool test_euler_heisenberg(void) {
 
   return true;
 }
+
+}  // namespace bhr

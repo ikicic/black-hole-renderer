@@ -5,6 +5,8 @@
 #include <bhr/schwarzschild.h>
 #include <bhr/render.h>
 
+namespace bhr {
+
 void check_kerr(void) {
   constexpr int s = 1;
   FILE *f = fopen(s == 1 ? "output/kerr_check_prograde.csv"
@@ -91,4 +93,7 @@ void check_kerr(void) {
 
   fclose(f);
 }
+
+}  // namespace bhr
+
 #endif

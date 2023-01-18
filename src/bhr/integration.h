@@ -3,6 +3,7 @@
 
 #include <bhr/utility.h>
 
+namespace bhr {
 
 // https://math.okstate.edu/people/yqwang/teaching/math4513_fall11/Notes/rungekutta.pdf
 // Adaptive Runge-Kutta-FehlBerg
@@ -94,4 +95,7 @@ inline void integrate__RGF45(
 
   *output = out;
 }
+
+}  // namespace bhr
+
 #endif

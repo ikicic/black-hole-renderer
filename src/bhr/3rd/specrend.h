@@ -3,6 +3,8 @@
 
 #include "../spectrum.h"
 
+namespace bhr {
+
 /* A colour system is defined by the CIE x and y coordinates of
    its three primary illuminants and the x and y coordinates of
    the white point. */
@@ -61,5 +63,7 @@ XYZd spectrum_to_xyz(const Func &spec_intens) {
   // return XYZd{X / XYZ, Y / XYZ, Z / XYZ};
   return XYZd{{X, Y, Z}};
 }
+
+}  // namespace bhr
 
 #endif

@@ -1,5 +1,8 @@
 #include <bhr/base.h>
 #include <bhr/colors.h>
+#include <bhr/utility.h>
+
+namespace bhr {
 
 static const RGBd scale[] = {
 //   {.5, 0, 0},
@@ -43,3 +46,5 @@ RGBd discrete_linear_color_scale(colreal_t low, colreal_t mid, colreal_t high) {
 RGBd linear_color_scale(colreal_t low, colreal_t mid, colreal_t high) {
   return linear_interpolation(scale, N, low, mid, high);
 }
+
+}  // namespace bhr

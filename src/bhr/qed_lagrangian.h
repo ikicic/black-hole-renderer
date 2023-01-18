@@ -5,6 +5,8 @@
 #include <bhr/numerics.h>
 #include <tuple>
 
+namespace bhr {
+
 namespace QED {
   // REFERENCE: 1101.3433v5 - Kim, Lee - Light bending by nonlinear
   // electrodynamics under strong electric and magnetic field.
@@ -238,5 +240,7 @@ namespace QEDCache {
   LambdaCacheType get_cached_lambdas(double F, double G);
   void check_lambda_interpolation_precision(void);
 }
+
+}  // namespace bhr
 
 #endif

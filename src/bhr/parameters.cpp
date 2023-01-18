@@ -2,6 +2,8 @@
 #include <bhr/parameters.h>
 #include <bhr/qed_lagrangian.h>
 
+namespace bhr {
+
 void debug_units(void) {
 #define PRINT(x) fprintf(stderr, "%20s = %12lg\n", #x, double(x));
   PRINT(UNIT_kg);
@@ -33,3 +35,5 @@ void debug_units(void) {
   // assert(false);
 #undef PRINT
 }
+
+}  // namespace bhr

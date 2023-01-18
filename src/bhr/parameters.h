@@ -4,6 +4,8 @@
 #include <bhr/base.h>
 #include <bhr/physical_constants.h>
 
+namespace bhr {
+
 static constexpr QUANTITY(0, 1, 0, 0) _BLACK_HOLE_r_S = 2 * PHY_G * BLACK_HOLE_M / sqr(PHY_c);
 static constexpr QUANTITY(0, 1, 0, 0) _BLACK_HOLE_a_MAX = _BLACK_HOLE_r_S / 2;
 static constexpr QUANTITY(0, 0, 0, 1) _BLACK_HOLE_Q_MAX =
@@ -44,5 +46,7 @@ static constexpr QUANTITY(0, 1, 0, 0) OUTER_RADIUS = 100 * _BLACK_HOLE_r_S;
 
 // QUANTITY(0, 1, 0, 0) INNER_RADIUS = 6 * _BLACK_HOLE_r_S;
 // QUANTITY(0, 1, 0, 0) OUTER_RADIUS = 10 * INNER_RADIUS;
+
+}  // namespace bhr
 
 #endif
