@@ -17,6 +17,11 @@ endif()
 
 set(cxx_flags -Wall -Wextra -march=native)
 
+# The lite version of the code.
+add_executable(lite "${ROOT_DIR}/src/lite.cpp")
+target_compile_features(lite PUBLIC cxx_std_17)
+target_compile_options(lite PRIVATE ${cxx_flags})
+
 # Extension instantiations.
 add_library(
     bhr_lib

@@ -1,12 +1,13 @@
-/* Preporučene postavke prevođenja (za g++):
- *   g++ -std=c++11 -O3 -march=native -Wall -Wextra
- *   (za starije verzije g++-a, umjesto -std=c++11 koristite -std=c++0x)
- *
- * Imena .h i .cpp označenih s ORIGINAL označavaju lokacije u potpunom kodu. */
+// Lite version of the code.
+//
+// Handles only the geodesic integration, with no polarization nor QED effects.
+
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cmath>
+#include <memory>
 #include <tuple>
 
 enum Target {
@@ -16,7 +17,7 @@ enum Target {
   TARGET_TOO_MANY_STEPS
 };
 
-/* Za fizikalne konstante pretpostavljamo G = c = 1! */
+/* For all physical constants, we assume G = c = 1! */
 // ORIGINAL: include/physical_constants.h, include/parameters.h
 constexpr double M = 0.05;
 constexpr double a = 0.998 * M;
@@ -33,11 +34,11 @@ constexpr double dlambda_min = rs / 100000;
 constexpr double dlambda_max = rs * 100;
 constexpr double max_r = 1100 * rs;
 
-/* Pomoćne funkcije. */
+/* Helper functions. */
 template <typename T> inline T sqr(const T &x) { return x * x; }
 
 
-/******************************* STRUKTURE **********************************/
+/******************************** STRUCTS ***********************************/
 
 struct BoyerLindquist {  // ORIGINAL: include/coordinate.h
   double t;
@@ -48,7 +49,7 @@ struct BoyerLindquist {  // ORIGINAL: include/coordinate.h
   inline double &operator[](int k) { return ((double *)this)[k]; }
   inline double operator[](int k) const { return ((const double *)this)[k]; }
 
-  /* Aritmetičke operacije nad vektorom, potrebne za integraciju. */
+  /* Arithmetic operations on vectors, required for integration. */
   friend inline BoyerLindquist operator+(const BoyerLindquist &A,
                                          const BoyerLindquist &B) {
     return {A.t + B.t, A.r + B.r, A.theta + B.theta, A.phi + B.phi};
@@ -60,7 +61,7 @@ struct BoyerLindquist {  // ORIGINAL: include/coordinate.h
     return {-t, -r, -theta, -phi};
   }
 
-  /* Procjena razlike (greške) između dva vektora. */
+  /* Estimate of the vector difference (error). */
   friend inline double numerical_distance(const BoyerLindquist &A,
                                           const BoyerLindquist &B) {
     return std::sqrt(sqr(A.t - B.t)
@@ -69,7 +70,7 @@ struct BoyerLindquist {  // ORIGINAL: include/coordinate.h
                    + sqr(A.phi - B.phi));
   }
 
-  inline bool isfinite(void) const {
+  inline bool isfinite() const {
     using std::isfinite;
     return isfinite(t) && isfinite(r) && isfinite(theta) && isfinite(phi);
   }
@@ -87,10 +88,10 @@ struct Vector3 {  // ORIGINAL: include/vector.h
   friend inline Vector3 operator*(double c, const Vector3 &B) {
     return {c * B.x, c * B.y, c * B.z};
   }
-  inline Vector3 operator-(void) const {
+  inline Vector3 operator-() const {
     return {-x, -y, -z};
   }
-  inline Vector3 normalized(void) const {
+  inline Vector3 normalized() const {
     return (1 / std::sqrt(x * x + y * y + z * z)) * (*this);
   }
 
@@ -112,7 +113,7 @@ struct BGRA {
 };
 
 
-/**************************** KERROVA METRIKA ********************************/
+/****************************** KERR METRIC **********************************/
 
 Christoffel get_christoffel_ull(const BoyerLindquist &position) {
   /* Thomas Müller, Catalogue of Spacetimes, http://arxiv.org/abs/0904.4184v3 */
@@ -133,7 +134,7 @@ Christoffel get_christoffel_ull(const BoyerLindquist &position) {
   double Delta = rr - rs * r + aa;
   double one_over_Delta = 1 / Delta;
 
-  /* Notacija: t = t, r = r, h = theta, p = phi. */
+  /* Notation: t = t, r = r, h = theta, p = phi. */
   double rtt = .5 * rs * Delta * sigma * one_over_Sigma3;
   double ttr = .5 * rs * rr_aa * sigma * one_over_Sigma2 * one_over_Delta;
   double tth = -rs * aa * r * sin_cos_theta * one_over_Sigma2;
@@ -186,9 +187,9 @@ Christoffel get_christoffel_ull(const BoyerLindquist &position) {
 }
 
 
-/*************************** JEDNADŽBA GEODEZIKA *****************************/
+/**************************** GEODESIC EQUATION ******************************/
 
-struct ODEState {  /* Ukupni 8D vektor koji ulazi u dif. jedn. */
+struct ODEState {  /* The 8D vector entering the diff. eq. */
   BoyerLindquist position;
   BoyerLindquist direction;
 
@@ -200,7 +201,7 @@ struct ODEState {  /* Ukupni 8D vektor koji ulazi u dif. jedn. */
   }
 };
 
-/* Izračun y_{n+1} uz zadan y_n, fiksan h i desnu stranu dif. jedn. f(y). */
+/* Compute y_{n+1} given y_n, fixed h and the RHS f(y). */
 template <typename Vector, typename RHSFunc>
 std::pair<Vector, Vector> integration_step_RGF45(
     const RHSFunc &RHS, const double h, const Vector &u) {
@@ -233,11 +234,11 @@ std::pair<Vector, Vector> integration_step_RGF45(
            + (-9. / 50) * k5
            + (2. / 55) * k6;
 
-  return std::make_pair(out4, out5);  // Rezultat 4. i 5. reda.
+  return std::make_pair(out4, out5);  // Result of the 4th and 5th order.
 }
 
-/* Desna strana dif. jedn. dy/dlambda = f(y). Napomena: Radi jednostavnosti,
- * u kôdu koristimo dlambda > 0 pa smo tu okrenuli predznake za f(y). */
+/* The RHS of the diff. eq. dy/dlambda = f(y). Note: for simplicity, in the
+ * code we use dlambda > 0 so we flipped here the signs for f(y). */
 ODEState geodesic_RHS(const ODEState &state) {  // ORIGINAL: include/geodesic.h
   Christoffel christoffel_ull = get_christoffel_ull(state.position);
 
@@ -256,14 +257,14 @@ ODEState geodesic_RHS(const ODEState &state) {  // ORIGINAL: include/geodesic.h
   return result;
 }
 
-/* Jedan korak RGF45 integracije, uključujući adaptaciju. */
+/* One step of RGF45 integration, including h adaptivity. */
 std::pair<ODEState, double> advance_geodesic_RGF45(const double min_h,
                                                    double h,
                                                    const double max_h,
                                                    const double epsilon,
                                                    const ODEState &state) {
   // ORIGINAL: include/raytracer.h
-  // Ovdje je adaptacija koraka h djelomično modificirana u odnosu na RGF45.
+  // Here the h adaptivity is somewhat modified compared to RGF45.
   constexpr double SAFETY = 0.84;
   constexpr double SAFETY_INC = 1.2;
   constexpr double SAFETY_INC_MAX = 3.0;
@@ -285,7 +286,7 @@ std::pair<ODEState, double> advance_geodesic_RGF45(const double min_h,
     }
 
     if (++limit == 20) {
-      fprintf(stderr, "Prevelik broj koraka u advance_geodesic_RGF45!\n");
+      fprintf(stderr, "Too large step count in advance_geodesic_RGF45!\n");
       exit(1);
     }
 
@@ -295,15 +296,15 @@ std::pair<ODEState, double> advance_geodesic_RGF45(const double min_h,
   }
 }
 
-/* Rješava jednadžbu geodezika dy/dlambda = f(y), uz sve uvjete prekida. */
+/* Integrates dy/dlambda = f(y), with all termination criteria. */
 std::pair<ODEState, int> generate_geodesic(const BoyerLindquist &position,
                                            const BoyerLindquist &direction) {
   // ORIGINAL: include/raytracer.h
-  ODEState state0{position, direction};  // Trenutačno stanje y(lambda).
-  double dlambda0 = dlambda_initial;     // Korak dlambda.
+  ODEState state0{position, direction};  // Current y(lambda).
+  double dlambda0 = dlambda_initial;     // The step dlambda.
 
   for (int n = 0; n < MAX_N; ++n) {
-    ODEState state1;  // Novo stanje i novi korak dlambda.
+    ODEState state1;  // The state and the new stap dlambda.
     double dlambda1;
     std::tie(state1, dlambda1) = advance_geodesic_RGF45(
         dlambda_min, dlambda0, dlambda_max, epsilon, state0);
@@ -316,7 +317,7 @@ std::pair<ODEState, int> generate_geodesic(const BoyerLindquist &position,
       return std::make_pair(state1, TARGET_BLACK_HOLE);
     }
 
-    // Usporavanje u blizini diska ako prelazimo z == 0 ravninu.
+    // Slowdown near the disk if we are crossing the z == 0 plane.
     const auto z0 = std::cos(state0.position.theta) * state0.position.r;
     const auto z1 = std::cos(state1.position.theta) * state1.position.r;
     const auto r = state0.position.r;
@@ -327,7 +328,7 @@ std::pair<ODEState, int> generate_geodesic(const BoyerLindquist &position,
           return std::make_pair(state1, TARGET_DISK);
       } else if (0.7 * disk_inner_r < r && r < 1.3 * disk_outer_r) {
         dlambda0 = std::max(dlambda_min, dlambda0 / 2);
-        continue;  // Smanji dlambda i ponovi korak integracije.
+        continue;  // Decrease dlambda and repeat the integration step.
       }
     }
 
@@ -339,9 +340,9 @@ std::pair<ODEState, int> generate_geodesic(const BoyerLindquist &position,
 }
 
 
-/********************************* KAMERA ************************************/
+/********************************* CAMERA ************************************/
 
-/* Računa smjer zrake za zadanu rel. poziciju pixela x, y (-1 <= x, y <= 1). */
+/* Computes the ray directions given rel. positions x, y (-1 <= x, y <= 1). */
 class ProjectionCamera {  // ORIGINAL: include/raytracer.h
  private:
   Vector3 view, right;
@@ -384,7 +385,7 @@ void matrix3_inverse(const double m[3][3], double out[3][3]) {
   out[2][2] = (m[0][0] * m[1][1] - m[1][0] * m[0][1]) * invdet;
 }
 
-/* Pretvaranje pozicije i vektora iz Kartezijevih u Boyer-Lindquist koord. */
+/* Convert position and direction from Certesian to Boyer-Lindquist coord. */
 std::pair<BoyerLindquist, BoyerLindquist> cartesian_to_boyer_lindquist(
     const Vector3 &pos, const Vector3 &dir) {  // ORIGINAL: include/coordinate.h
   double ss = sqr(pos.x) + sqr(pos.y);
@@ -406,12 +407,12 @@ std::pair<BoyerLindquist, BoyerLindquist> cartesian_to_boyer_lindquist(
   matrix3_inverse(mat, inv);
 
   BoyerLindquist position, direction;
-  position.t = 0.0;  // Nije bitno.
+  position.t = 0.0;  // Ignored.
   position.r = r;
   position.theta = std::atan2(s * r, ra * pos.z);
   position.phi = std::atan2(pos.y, pos.x);
 
-  direction.t = 1.0;  // Approx., u redu ako je kamera daleko od crne rupe.
+  direction.t = 1.0;  // Approx., ok if the camera is far from the black hole.
   direction.r     = inv[0][0] * dir.x + inv[0][1] * dir.y + inv[0][2] * dir.z;
   direction.theta = inv[1][0] * dir.x + inv[1][1] * dir.y + inv[1][2] * dir.z;
   direction.phi   = inv[2][0] * dir.x + inv[2][1] * dir.y + inv[2][2] * dir.z;
@@ -420,10 +421,10 @@ std::pair<BoyerLindquist, BoyerLindquist> cartesian_to_boyer_lindquist(
 }
 
 
-/********************** GENERIRANJE I SPREMANJE SLIKE ************************/
+/********************* GENERATING AND SAVING THE IMAGE ***********************/
 
-/* TGA (u osnovnom obliku) je izrazito jednostavan format slike.
- * Boje se spremaju u poretku BGRA, a ne RGBA!. */
+/* TGA (in the basic settings) is quite simple to handle.
+ * Note: colors are stored in the BGRA order, not RGBA! */
 void save_TGA(const BGRA *image, int width, int height, const char *filename) {
   // ORIGINAL: src/tga.cpp
   unsigned char header[18] = {0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -431,17 +432,17 @@ void save_TGA(const BGRA *image, int width, int height, const char *filename) {
   header[13] = (width >> 8)  & 0xFF;
   header[14] = height        & 0xFF;
   header[15] = (height >> 8) & 0xFF;
-  header[16] = 32;  // BPP.
-  header[17] = 32;  // (Isključi) vertikalno zrcaljenje.
+  header[16] = 32;  // Bits per pixel.
+  header[17] = 32;  // (Disable) vertical mirroring.
 
   FILE *f = fopen(filename, "wb");
-  if (f == NULL) exit(10);
+  if (f == nullptr) exit(10);
   if (fwrite(header, 18, 1, f) != 1) exit(11);
   if (fwrite(image, width * height * 4, 1, f) != 1) exit(12);
   fclose(f);
 }
 
-/* Boja jednog px, u ovisnosti o pogođenoj meti i konačnom stanju geodezika. */
+/* Pixel color, depending on the target hit and the final geodesic state. */
 BGRA get_color(const ODEState &state, int target) {
   // ORIGINAL: include/render.h
   switch(target) {
@@ -464,19 +465,19 @@ BGRA get_color(const ODEState &state, int target) {
   };
 }
 
-int main(void) {
-  const int width = 320;
+int main() {
+  const int width = 640;
   const int height = 3 * width / 4;
-  BGRA *image = new BGRA[width * height];
-  if (image == NULL) exit(1);
+  auto image = std::make_unique<BGRA[]>(width * height);
+  if (image == nullptr) return 1;
 
-  double fovy = 1.0;                           // Kut gledanja.
-  double camera_dist = 1000 * rs;              // Udaljenost kamere.
-  double camera_theta = 75 * M_PI / 180.;      // Kut pozicije u odnosu na z-os.
+  double fovy = 1.0;                       // Field of view.
+  double camera_dist = 1000 * rs;          // Distance from the origin.
+  double camera_theta = 75 * M_PI / 180.;  // Angle of the position wrt z-axis.
   double cos_theta = std::cos(camera_theta);
   double sin_theta = std::sin(camera_theta);
   assert(camera_dist < max_r);
-  // Gdje je kamera (eye), u što gleda (center) i kako je orijentirana (up).
+  // Camera's position (eye), its orientation (up) and the target (center).
   Vector3 eye = camera_dist * Vector3{sin_theta, 0, cos_theta};
   Vector3 up = camera_dist * Vector3{-cos_theta, 0, sin_theta};
   Vector3 center{0, 0, 0};
@@ -491,7 +492,7 @@ int main(void) {
 
       BoyerLindquist position, direction;
       std::tie(position, direction) = cartesian_to_boyer_lindquist(
-          ray.first, -ray.second);  // Minus na smjer jer zraku šaljemo unatrag.
+          ray.first, -ray.second);  // Minus because we send the ray backwards.
 
       std::pair<ODEState, int> result = generate_geodesic(position, direction);
       image[i * width + j] = get_color(result.first, result.second);
@@ -500,7 +501,6 @@ int main(void) {
   }
   fprintf(stderr, "\n");
 
-  save_TGA(image, width, height, "output.tga");
-  delete []image;
+  save_TGA(image.get(), width, height, "output_lite.tga");
   return 0;
 }

@@ -8,6 +8,8 @@
 #include <bhr/render.h>
 #include <bhr/recursive_render.h>
 
+// TODO: Move blurs to their own .h and .cpp files.
+
 namespace bhr {
 
 

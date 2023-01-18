@@ -24,13 +24,12 @@ namespace bhr {
 
 int debug = 1;
 
-// Hope this isn't reserved by something important.
 #define GIVE_UP(...) { fprintf(stderr, __VA_ARGS__); return false; }
 
 template <typename FullGeodesicData,
           typename Spacetime,
           typename DiskTex>
-bool _generate_and_save_image(
+static bool _generate_and_save_image(
     const Spacetime &spacetime,
     const char *filename_float,
     const char *filename_image,
