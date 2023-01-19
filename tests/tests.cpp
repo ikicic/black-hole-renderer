@@ -28,7 +28,7 @@ static bool test_all(void) {
   TEST(test_boyer_lindquist2, "Boyer Lindquist 2");
   TEST(test_kerr, "Kerr");
   // TEST(test_flat_spherical, "Flat in spherical");
-  TEST(test_integrate__RGF45, "Runge-Kutta-Fehlberg 4(5) Integration");
+  TEST(test_integrate__RKF45, "Runge-Kutta-Fehlberg 4(5) Integration");
 
   // TEST(test_magnetic_only_lagrangian__base, "Magnetic-only Lagrangian base");
   TEST(test_qed_metric_correction_lambda__low_limit, "Lowest order Lagrangian");

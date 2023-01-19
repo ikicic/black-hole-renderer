@@ -203,7 +203,7 @@ struct ODEState {  /* The 8D vector entering the diff. eq. */
 
 /* Compute y_{n+1} given y_n, fixed h and the RHS f(y). */
 template <typename Vector, typename RHSFunc>
-std::pair<Vector, Vector> integration_step_RGF45(
+std::pair<Vector, Vector> integration_step_RKF45(
     const RHSFunc &RHS, const double h, const Vector &u) {
   // ORIGINAL: include/integration.h
   Vector k1, k2, k3, k4, k5, k6, out4, out5;
@@ -257,14 +257,14 @@ ODEState geodesic_RHS(const ODEState &state) {  // ORIGINAL: include/geodesic.h
   return result;
 }
 
-/* One step of RGF45 integration, including h adaptivity. */
-std::pair<ODEState, double> advance_geodesic_RGF45(const double min_h,
+/* One step of RKF45 integration, including h adaptivity. */
+std::pair<ODEState, double> advance_geodesic_RKF45(const double min_h,
                                                    double h,
                                                    const double max_h,
                                                    const double epsilon,
                                                    const ODEState &state) {
   // ORIGINAL: include/raytracer.h
-  // Here the h adaptivity is somewhat modified compared to RGF45.
+  // Here the h adaptivity is somewhat modified compared to RKF45.
   constexpr double SAFETY = 0.84;
   constexpr double SAFETY_INC = 1.2;
   constexpr double SAFETY_INC_MAX = 3.0;
@@ -272,7 +272,7 @@ std::pair<ODEState, double> advance_geodesic_RGF45(const double min_h,
   int limit = 0;
   for (;;) {
     ODEState final4, final5;
-    std::tie(final4, final5) = integration_step_RGF45(geodesic_RHS, h, state);
+    std::tie(final4, final5) = integration_step_RKF45(geodesic_RHS, h, state);
     double R = (numerical_distance(final4.position, final5.position)
               + numerical_distance(final4.direction, final5.direction)) / h;
     double delta = SAFETY * std::pow(epsilon / R, 0.25);
@@ -286,7 +286,7 @@ std::pair<ODEState, double> advance_geodesic_RGF45(const double min_h,
     }
 
     if (++limit == 20) {
-      fprintf(stderr, "Too large step count in advance_geodesic_RGF45!\n");
+      fprintf(stderr, "Too large step count in advance_geodesic_RKF45!\n");
       exit(1);
     }
 
@@ -306,7 +306,7 @@ std::pair<ODEState, int> generate_geodesic(const BoyerLindquist &position,
   for (int n = 0; n < MAX_N; ++n) {
     ODEState state1;  // The state and the new stap dlambda.
     double dlambda1;
-    std::tie(state1, dlambda1) = advance_geodesic_RGF45(
+    std::tie(state1, dlambda1) = advance_geodesic_RKF45(
         dlambda_min, dlambda0, dlambda_max, epsilon, state0);
 
     if (state1.position.r > max_r)

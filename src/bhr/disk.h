@@ -27,6 +27,7 @@ extern ShakuraSunyaevDisk *_shakura_sunyaev;
 double shakura_sunyaev_height(double r);
 
 class ShakuraSunyaevDisk {
+  // TODO: Fix M and Rstar, they should be configurable.
   double M;
   double Mdot;
   double Rstar;
@@ -306,7 +307,7 @@ class KERTAPDiskTexture {
     _ForwardsState new_state;
     for (int s = (int)dlambdas.size() - 1; s >= 0; --s) {
       double dlambda = dlambdas[s];
-      integration_step__RGF45(RHS, dlambda, state, &new_state);
+      integration_step__RKF45(RHS, dlambda, state, &new_state);
       state = new_state;
     }
     return state;

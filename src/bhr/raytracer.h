@@ -111,7 +111,7 @@ class ProjectionCamera : public Camera {
 
 
 template <typename BasicGeodesicState, typename Spacetime, typename Field>
-std::pair<real_t, real_t> advance_geodesic__RGF45(
+std::pair<real_t, real_t> advance_geodesic__RKF45(
     const Spacetime &spacetime,
     const Field &field,
     const real_t min_h,
@@ -136,7 +136,7 @@ std::pair<real_t, real_t> advance_geodesic__RGF45(
       fprintf(stderr, "  h=%lg [%lg %lg]\n",
           (double)h, (double)min_h, (double)max_h);
     }
-    const real_t R = integration_step__RGF45(RHS, h, basic, output);
+    const real_t R = integration_step__RKF45(RHS, h, basic, output);
     const real_t delta = SAFETY * std::pow(epsilon / R, 0.25);
     if (debug >= 3) {
       fprintf(stderr, "  h=%lg [%lg %lg]  R=%lg epsilon=%lg delta=%lg  ",
@@ -158,7 +158,7 @@ std::pair<real_t, real_t> advance_geodesic__RGF45(
           (double)h, (double)min_h, (double)max_h,
           (double)R, (double)epsilon, (double)delta);
       std::cerr << output->position << "  " << output->direction << "\n";
-      fprintf(stderr, "advance_geodesic__RGF45 step count limit exceeded.\n");
+      fprintf(stderr, "advance_geodesic__RKF45 step count limit exceeded.\n");
       exit(1);
     }
   }
@@ -210,7 +210,7 @@ auto generate_geodesic(
       }
     }
 
-    std::pair<real_t, real_t> _dlambda = advance_geodesic__RGF45(
+    std::pair<real_t, real_t> _dlambda = advance_geodesic__RKF45(
         spacetime,
         field,
         dlambda_min,

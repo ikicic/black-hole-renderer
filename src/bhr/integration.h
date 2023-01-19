@@ -8,7 +8,7 @@ namespace bhr {
 // https://math.okstate.edu/people/yqwang/teaching/math4513_fall11/Notes/rungekutta.pdf
 // Adaptive Runge-Kutta-FehlBerg
 template <typename Vector, typename RHS>
-inline real_t integration_step__RGF45(
+inline real_t integration_step__RKF45(
     const RHS &rhs, const real_t h, const Vector &u, Vector *out) {
 
 #define EVALUATE(v, w) { \
@@ -65,7 +65,7 @@ inline real_t integration_step__RGF45(
 
 
 template <typename Vector, typename RHS>
-inline void integrate__RGF45(
+inline void integrate__RKF45(
     const RHS &rhs,
     Vector initial,
     real_t t,
@@ -80,7 +80,7 @@ inline void integrate__RGF45(
 
   while (t != 0.0) {
     if (h > t) h = t;
-    const real_t R = integration_step__RGF45(rhs, h, initial, &out);
+    const real_t R = integration_step__RKF45(rhs, h, initial, &out);
     if (R <= epsilon) {
       t -= h;
       initial = out;

@@ -21,7 +21,7 @@ bool test_flat_spherical(void);
 bool test_kerr(void);
 
 /* Integration */
-bool test_integrate__RGF45(void);
+bool test_integrate__RKF45(void);
 
 /* Automatic differentiation */
 bool test_autodiff_2nd(void);

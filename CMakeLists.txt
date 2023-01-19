@@ -59,7 +59,7 @@ if (BHR_ENABLE_TESTS)
         "${TEST_DIR}/test_float_helpers.cpp"
         "${TEST_DIR}/test_kerr.cpp"
         "${TEST_DIR}/test_qed_lagrangian.cpp"
-        "${TEST_DIR}/test_rgf45.cpp"
+        "${TEST_DIR}/test_rkf45.cpp"
         "${TEST_DIR}/test_schwarzschild.cpp"
         "${TEST_DIR}/test_spherical.cpp"
         "${TEST_DIR}/test_tensor.cpp"
