@@ -14,7 +14,7 @@ Implemented features:
 Other aesthetic features:
 
 - "sky" background texture
-- quadtree-based antialiasing and optimization
+- quadtree-based anti-aliasing and optimization
 
 
 Compilation
@@ -32,10 +32,10 @@ Usage
 -----
 
 **Note:** The BHR code is quite experimental and not entirely user-friendly at the moment.
-The settings like the type of the spacetime, the spacetime parameters, the disk type and what quantities are visualized are all currently set at compile time (see [](src/bhr/config.h), [](src/bhr/parameters.h) and [](src/bhr/main.cpp)).
+The settings like the type of the spacetime, the spacetime parameters, the disk type and what quantities are visualized are all currently set at compile time (see [src/bhr/config.h](src/bhr/config.h), [src/bhr/parameters.h](src/bhr/parameters.h) and [src/bhr/main.cpp](src/bhr/main.cpp)).
 This is because the integration of geodesics is quite slow, so the idea was to disable everything unused and help the compiler optimize the code as much as possible.
 Maybe one day I refactor the code and make everything configurable at runtime.
-The output image resolution, camera position and similar parameters are currently configurable through command-line arguments (see [](src/bhr/settings.h)).
+The output image resolution, camera position and similar parameters are currently configurable through command-line arguments (see [src/bhr/settings.h](src/bhr/settings.h)).
 
 To run the code, execute the following:
 
@@ -49,7 +49,7 @@ To run the code, execute the following:
     # Run.
     ./build/bhr --width 1024 --aspect 16:9 --output_image output.tga --no-cache
 
-By default, the code renders a rotating black hole of mass 1.25 M<sub>Sub</sub> with an angular moment of 0.998 (relative).
+By default, the code renders a rotating black hole of mass 1.25 M<sub>Sun</sub> with an angular moment of 0.998 (relative).
 (The mass is so small because it actually represents a neutron star, but its radius is set to 0.)
 
 The expected output is the following, with a different color scheme and no legend:
