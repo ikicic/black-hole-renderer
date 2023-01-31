@@ -60,12 +60,6 @@ The black lines denote the polarization, and the colors the light intensity.
 Due to the Doppler effect, the left side (rotating towards the camera) is a few orders of magnitude brighter than the right side.
 
 
-Gallery
--------
-
-More renders are available [here](https://drive.google.com/drive/folders/0B1mAEaKMwKIVMklmUGx0VUJwNWs?resourcekey=0-gK3q6emMQNOAdDPQ5rEK3A&usp=sharing).
-
-
 Lite version
 ------------
 
@@ -80,10 +74,11 @@ Use the following commands to compile and run it:
     make lite
     ./lite
 
-Alternatively, compile manually using:
+Alternatively, compile manually with the following:
 
     cd src
     g++ -O3 -march=native -std=c++17 lite.cpp -o lite
+    ./lite
 
 The lite code produces the following image (stored as ``output_lite.tga``).
 
@@ -92,6 +87,12 @@ The lite code produces the following image (stored as ``output_lite.tga``).
 The black hole is marked in red.
 The colors on the disk denote the location on the disk.
 Multiple images of the same disk can be seen.
+
+
+Gallery
+-------
+
+More renders are available [here](https://drive.google.com/drive/folders/0B1mAEaKMwKIVMklmUGx0VUJwNWs?resourcekey=0-gK3q6emMQNOAdDPQ5rEK3A&usp=sharing).
 
 
 References
